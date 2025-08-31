@@ -5,8 +5,8 @@ import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 // Estilo para el contenedor del mapa
 const containerStyle = {
-  width: '100%',
-  height: '100vh'
+  width: '100wh',
+  height: '100vh',
 };
 
 // Coordenadas iniciales (Mendoza), se usará si no se obtiene la ubicación del usuario

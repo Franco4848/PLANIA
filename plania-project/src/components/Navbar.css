@@ -1,0 +1,65 @@
+/* src/components/Navbar.css */
+
+.navbar-container {
+  /* Posicionamiento y tamaño */
+  position: absolute; /* Sigue flotando sobre el mapa */
+  left: 0;
+  top: 0;
+  height: 100vh; /* Ocupa el 100% de la altura de la ventana */
+  width: 260px; /* Ancho de la barra lateral */
+  z-index: 1000; /* Se mantiene por encima de todo */
+
+  /* Estilo visual */
+  background-color: #474b57de; /* Un color oscuro como el de la referencia */
+  color: #e0e0e0; /* Color de texto claro */
+  display: flex;
+  flex-direction: column; /* Organiza el contenido verticalmente */
+  padding: 20px 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Sombra sutil a la derecha */
+  transition: width 0.3s ease; /* (Opcional) Para futuras animaciones de colapso */
+}
+.logo{
+    width: 200px;
+    height: 70px;
+}
+.navbar-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  background-color: #000;
+  border-radius: 12px;
+}
+
+.navbar-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.navbar-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre los ítems */
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espacio entre el ícono y el texto */
+  padding: 12px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 1rem;
+}
+
+.nav-item:hover {
+  background-color: #2c2d31; /* Un gris un poco más claro al pasar el mouse */
+}
+
+.nav-item.active {
+  background-color: #3a3b40; /* Color de fondo para el ítem activo */
+  color: #ffffff;
+  font-weight: 500;
+}

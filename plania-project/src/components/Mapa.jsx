@@ -6,71 +6,33 @@ const containerStyle = {
   height: '100vh',
 };
 
-const initialCenter = {
-  lat: -32.89084,
-  lng: -68.82717,
-};
-
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-const Mapa = ({ filtroTipo, activeTab }) => {
-  const [userPosition, setUserPosition] = useState(null);
+const Mapa = ({ filtroTipo, activeTab, userPosition }) => {
   const [lugares, setLugares] = useState([]);
   const [selectedLugar, setSelectedLugar] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 📍 Obtener ubicación del usuario
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setUserPosition({ lat: latitude, lng: longitude });
-      },
-      (error) => {
-        console.error('Error al obtener ubicación:', error);
-        setUserPosition(initialCenter);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      }
-    );
-  }, []);
+    if (!userPosition || activeTab !== 'filtro') return;
 
-  // 🔄 Obtener actividades cercanas cuando se activa 'itinerario'
-  useEffect(() => {
-    if (userPosition && activeTab === 'itinerario') {
-      setLoading(true);
-      const tipoConsulta = filtroTipo || 'todas';
+    setLoading(true);
+    const tipoConsulta = filtroTipo || 'todas';
 
-      fetch(`http://localhost:3000/actividades/buscar?lat=${userPosition.lat}&lng=${userPosition.lng}&tipo=${tipoConsulta}`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log('Actividades recibidas:', data);
-          setLugares(data);
-        })
-        .catch((err) => {
-          console.error('Error al obtener actividades:', err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [activeTab, userPosition, filtroTipo]);
+    console.log('Filtro enviado:', tipoConsulta);
 
-  if (!userPosition) {
-    return <div>Obteniendo tu ubicación...</div>;
-  }
+    fetch(`http://localhost:3000/actividades/buscar?lat=${userPosition.lat}&lng=${userPosition.lng}&tipo=${tipoConsulta}`)
+      .then((res) => res.json())
+      .then((data) => setLugares(data))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, [activeTab, filtroTipo, userPosition]);
+
+  if (!userPosition) return <div>Obteniendo tu ubicación...</div>;
 
   return (
     <LoadScript googleMapsApiKey={apiKey}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={userPosition}
-        zoom={16}
-      >
-        {/* 📍 Marcador del usuario */}
+      <GoogleMap mapContainerStyle={containerStyle} center={userPosition} zoom={16}>
         <Marker
           position={userPosition}
           title="Tu ubicación"
@@ -82,18 +44,9 @@ const Mapa = ({ filtroTipo, activeTab }) => {
           }}
         />
 
-        {/* 📌 Marcadores de actividades */}
-        {activeTab === 'itinerario' && !loading && lugares.length > 0 &&
+        {activeTab === 'filtro' && !loading && lugares.length > 0 &&
           lugares.map((lugar, index) => {
-            if (
-              !lugar ||
-              !lugar.coordenadas ||
-              typeof lugar.coordenadas.lat !== 'number' ||
-              typeof lugar.coordenadas.lng !== 'number'
-            ) {
-              console.warn('Lugar inválido:', lugar);
-              return null;
-            }
+            if (!lugar?.coordenadas?.lat || !lugar?.coordenadas?.lng) return null;
 
             return (
               <Marker
@@ -107,7 +60,6 @@ const Mapa = ({ filtroTipo, activeTab }) => {
             );
           })}
 
-        {/* 🗨️ InfoWindow con detalles */}
         {selectedLugar && (
           <InfoWindow
             position={{
@@ -124,8 +76,7 @@ const Mapa = ({ filtroTipo, activeTab }) => {
           </InfoWindow>
         )}
 
-        {/* 🛑 Mensaje si no hay actividades */}
-        {activeTab === 'itinerario' && !loading && lugares.length === 0 && (
+        {activeTab === 'filtro' && !loading && lugares.length === 0 && (
           <div style={{
             position: 'absolute',
             top: '10px',

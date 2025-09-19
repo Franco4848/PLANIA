@@ -1,46 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Mapa from './components/Mapa';
 import Navbar from './components/Navbar';
 import Itinerario from './components/Itinerario';
+import Filtro from './components/Filtro';
 import './App.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('mapa');
   const [filtroTipo, setFiltroTipo] = useState('todas');
+  const [userPosition, setUserPosition] = useState(null);
 
-  const tipoParaMapa = filtroTipo;
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setUserPosition({ lat: latitude, lng: longitude });
+      },
+      () => setUserPosition({ lat: -32.89, lng: -68.82 })
+    );
+  }, []);
 
   return (
     <div className="app-container">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* ✅ El mapa se renderiza tanto en 'mapa' como en 'itinerario' */}
-      {(activeTab === 'mapa' || activeTab === 'itinerario') && (
-        <Mapa filtroTipo={tipoParaMapa} activeTab={activeTab} />
+      {(activeTab === 'mapa' || activeTab === 'filtro' || activeTab === 'itinerario') && (
+        <Mapa
+          filtroTipo={filtroTipo}
+          activeTab={activeTab}
+          userPosition={userPosition}
+        />
       )}
 
-      {/* ✅ Solo se muestra la lista textual si estás en 'itinerario' */}
-      {activeTab === 'itinerario' && (
-        <Itinerario filtroTipo={filtroTipo} />
-      )}
-
-      {/* ✅ Filtro de actividades */}
       {activeTab === 'filtro' && (
-        <div className='overlay-content'>
-          <select value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
-            <option value="todas">Todas</option>
-            <option value="restaurant">Restaurantes</option>
-            <option value="museo">Museos</option>
-            <option value="parque">Parques</option>
-            <option value="cafetería">Cafeterías</option>
-            <option value="cine">Cines</option>
-            <option value="galería">Galerías</option>
-            <option value="atracción">Atracciones</option>
-            <option value="plaza">Plazas</option>
-            <option value="bodega">Bodegas</option>
-          </select>
+        <div className="overlay-content">
+          <Filtro filtroTipo={filtroTipo} setFiltroTipo={setFiltroTipo} />
         </div>
       )}
+
+      {activeTab === 'itinerario' && <Itinerario />}
     </div>
   );
 }

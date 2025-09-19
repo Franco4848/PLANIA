@@ -1,34 +1,40 @@
-/* src/App.css */
-
-
-
-/* ... (la clase .app-container se mantiene igual) ... */
 .app-container {
-  position: relative; 
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   top: 0;
   left: 0;
-
   font-family: "Nunito", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
-
 }
-
 
 .overlay-content {
   position: absolute;
   top: 20px;
-  /* ANTES: left: 120px; */
-  left: 280px; /* AHORA: 260px del navbar + 20px de margen */
+  left: 280px;
   z-index: 999;
   background-color: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin-left: 10px ;
-  height: 20px;
+  display: flex;
   align-items: center;
+  gap: 12px;
+  min-height: 60px;
+}
+
+.filtro-container h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.filtro-container select {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
 }

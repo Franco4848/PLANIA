@@ -1,0 +1,20 @@
+.filtro-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+.filtro-container h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.filtro-container select {
+  padding: 6px;
+  font-size: 14px;
+}

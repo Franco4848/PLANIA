@@ -22,8 +22,26 @@ export class ActividadesController {
           direccion: lugar.direccion,
           rating: lugar.rating,
           coordenadas: lugar.coordenadas,
+          categoria: traducirCategoria(lugar.tipos?.[0]) ?? 'otro' // 👈 agregado
         };
       })
       .filter(Boolean);
   }
+}
+
+// 🔠 Traductor simple de categorías de Google a español
+function traducirCategoria(tipo: string | undefined): string {
+  const mapa: Record<string, string> = {
+    cafe: 'cafeteria',
+    restaurant: 'restaurante',
+    museum: 'museo',
+    park: 'parque',
+    art_gallery: 'galería',
+    movie_theater: 'cine',
+    tourist_attraction: 'atracción',
+    winery: 'bodega',
+    lodging: 'alojamiento'
+  };
+
+  return tipo ? mapa[tipo] ?? tipo : 'otro';
 }

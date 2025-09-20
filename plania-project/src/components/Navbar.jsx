@@ -38,6 +38,7 @@
 // export default Navbar;
 
 // src/components/Navbar.jsx
+// src/components/Navbar.jsx
 
 import React from 'react';
 import './Navbar.css';
@@ -47,8 +48,9 @@ import {
   FaUser,
   FaCompass,
   FaCloud,
-  FaFilter
-} from 'react-icons/fa'; // Íconos 
+  FaFilter,
+  FaRobot // ✅ ícono de IA
+} from 'react-icons/fa';
 
 const Navbar = ({ activeTab, setActiveTab }) => {
   return (
@@ -56,11 +58,11 @@ const Navbar = ({ activeTab, setActiveTab }) => {
       {/* Encabezado o Logo de la App */}
       <div className="navbar-header">
         <img src='./public/plania.png' className="logo" alt='logo de PlanIA' />
-        {/* <span className="navbar-title">PlanIA</span> */}
       </div>
 
       {/* Cuerpo de la navegación */}
       <div className="navbar-body">
+        {/* 1. Mapa */}
         <div
           className={`nav-item ${activeTab === 'mapa' ? 'active' : ''}`}
           onClick={() => setActiveTab('mapa')}
@@ -69,6 +71,16 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           <span className="nav-text">Mapa Interactivo</span>
         </div>
 
+        {/* 2. IA */}
+        <div
+          className={`nav-item ${activeTab === 'ia' ? 'active' : ''}`}
+          onClick={() => setActiveTab('ia')}
+        >
+          <FaRobot size={22} />
+          <span className="nav-text">IA</span>
+        </div>
+
+        {/* 3. Itinerario */}
         <div
           className={`nav-item ${activeTab === 'itinerario' ? 'active' : ''}`}
           onClick={() => setActiveTab('itinerario')}
@@ -77,6 +89,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           <span className="nav-text">Itinerario</span>
         </div>
 
+        {/* 4. Filtro */}
         <div
           className={`nav-item ${activeTab === 'filtro' ? 'active' : ''}`}
           onClick={() => setActiveTab('filtro')}
@@ -85,22 +98,23 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           <span className="nav-text">Filtro</span>
         </div>
 
+        {/* 5. Clima */}
         <div
-          className={`nav-item ${activeTab === 'clima' ? 'active' : ''}`}
+          className={`nav-item ${activeTab === 'nube' ? 'active' : ''}`}
           onClick={() => setActiveTab('nube')}
         >
           <FaCloud size={22} />
           <span className="nav-text">Clima</span>
         </div>
 
-                <div
+        {/* 6. Perfil */}
+        <div
           className={`nav-item ${activeTab === 'perfil' ? 'active' : ''}`}
           onClick={() => setActiveTab('perfil')}
         >
           <FaUser size={22} />
           <span className="nav-text">Mi Perfíl</span>
         </div>
-
       </div>
     </nav>
   );

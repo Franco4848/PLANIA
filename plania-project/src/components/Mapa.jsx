@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '100%',
@@ -8,18 +8,18 @@ const containerStyle = {
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-const Mapa = ({ filtroTipo, activeTab, userPosition }) => {
+const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
   const [lugares, setLugares] = useState([]);
   const [selectedLugar, setSelectedLugar] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [rutaCalculada, setRutaCalculada] = useState(null);
 
+  // 🔄 Cargar lugares si estás en la pestaña "filtro"
   useEffect(() => {
     if (!userPosition || activeTab !== 'filtro') return;
 
     setLoading(true);
     const tipoConsulta = filtroTipo || 'todas';
-
-    console.log('Filtro enviado:', tipoConsulta);
 
     fetch(`http://localhost:3000/actividades/buscar?lat=${userPosition.lat}&lng=${userPosition.lng}&tipo=${tipoConsulta}`)
       .then((res) => res.json())
@@ -28,11 +28,39 @@ const Mapa = ({ filtroTipo, activeTab, userPosition }) => {
       .finally(() => setLoading(false));
   }, [activeTab, filtroTipo, userPosition]);
 
+  // 🧭 Dibujar ruta si se recibe desde IA
+  useEffect(() => {
+    if (!userPosition || !rutaDatos) return;
+
+    const { destino, waypoints } = rutaDatos;
+    if (!destino || !waypoints || waypoints.length === 0) return;
+
+    const directionsService = new window.google.maps.DirectionsService();
+
+    directionsService.route(
+      {
+        origin: userPosition,
+        destination: destino,
+        waypoints: waypoints,
+        travelMode: window.google.maps.TravelMode.WALKING,
+        optimizeWaypoints: true
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          setRutaCalculada(result);
+        } else {
+          console.error('Error al calcular ruta:', status);
+        }
+      }
+    );
+  }, [rutaDatos, userPosition]);
+
   if (!userPosition) return <div>Obteniendo tu ubicación...</div>;
 
   return (
     <LoadScript googleMapsApiKey={apiKey}>
       <GoogleMap mapContainerStyle={containerStyle} center={userPosition} zoom={16}>
+        {/* 📍 Tu ubicación */}
         <Marker
           position={userPosition}
           title="Tu ubicación"
@@ -44,6 +72,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition }) => {
           }}
         />
 
+        {/* 📌 Marcadores si estás en "filtro" */}
         {activeTab === 'filtro' && !loading && lugares.length > 0 &&
           lugares.map((lugar, index) => {
             if (!lugar?.coordenadas?.lat || !lugar?.coordenadas?.lng) return null;
@@ -60,6 +89,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition }) => {
             );
           })}
 
+        {/* 🗨️ InfoWindow al hacer clic en un marcador */}
         {selectedLugar && (
           <InfoWindow
             position={{
@@ -76,19 +106,9 @@ const Mapa = ({ filtroTipo, activeTab, userPosition }) => {
           </InfoWindow>
         )}
 
-        {activeTab === 'filtro' && !loading && lugares.length === 0 && (
-          <div style={{
-            position: 'absolute',
-            top: '10px',
-            left: '10px',
-            background: 'white',
-            padding: '8px',
-            borderRadius: '4px',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-            zIndex: 1000
-          }}>
-            No se encontraron actividades cercanas.
-          </div>
+        {/* 🧭 Ruta dibujada si está disponible */}
+        {rutaCalculada && (
+          <DirectionsRenderer directions={rutaCalculada} />
         )}
       </GoogleMap>
     </LoadScript>

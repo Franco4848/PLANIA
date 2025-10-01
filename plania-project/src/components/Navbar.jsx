@@ -1,49 +1,9 @@
-// import React from 'react';
-// import './Navbar.css';
-// import {FaMapMarkedAlt, FaWineGlassAlt, FaUser } from 'react-icons/fa';
-
-// const Navbar = ({ activeTab, setActiveTab }) => {
-//     return (
-//         <nav className='navbar-container'>
-
-//             {/* Opción 1: Mapa */}
-//             <div 
-//                 claseName = {`nav-item ${activeTab === 'mapa' ? 'active' : ''}`}
-//                 onClick ={() => setActiveTab('mapa')}
-//                 title = "Mapa"
-//                 >
-//                     < FaMapMarkedAlt size={28} />
-//                 </div>
-
-//             {/* Opción 2: Bodegas para el futuro */}
-//             <div
-//                 className={`nav-item ${activeTab === 'bodegas' ? 'active' : '' }`}
-//                 onClick = {() => setActiveTab('bodegas')}
-//                 title="Bodegas"
-//                 >
-//                     <FaWineGlassAlt size={28} />
-//                 </div>
-
-//             {/* Opción 2: Bodegas para el futuro */}
-//             <div
-//                 className = {`nav-item ${activeTab === 'perfil' ? 'acive' : ''}`}
-//                 onClick={ () => setActiveTab ('perfil')}
-//                 title = "Mi Perfil"
-//                 >
-//                 <FaUser size={28}/>
-//             </div>
-//         </nav>
-//     );
-// };
-// export default Navbar;
-
-// src/components/Navbar.jsx
-// src/components/Navbar.jsx
 
 import React from 'react';
 import './Navbar.css';
 import {
   FaMapMarkedAlt,
+  FaMapMarkerAlt,
   FaListAlt,
   FaUser,
   FaCompass,
@@ -89,13 +49,13 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           <span className="nav-text">Itinerario</span>
         </div>
 
-        {/* 4. Filtro */}
+        {/* 4. Actividades cercanas */}
         <div
           className={`nav-item ${activeTab === 'filtro' ? 'active' : ''}`}
           onClick={() => setActiveTab('filtro')}
         >
-          <FaFilter size={22} />
-          <span className="nav-text">Filtro</span>
+          <FaMapMarkerAlt size={22} />
+          <span className="nav-text">Actividades cercanas</span>
         </div>
 
         {/* 5. Clima */}

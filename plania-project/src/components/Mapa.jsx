@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  InfoWindow,
+  DirectionsRenderer
+} from '@react-google-maps/api';
+import { FaCrosshairs } from 'react-icons/fa';
+import './PrecisionButton.css';
 
 const containerStyle = {
-  width: '100%',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100vw',
   height: '100vh',
+  overflow: 'hidden',
 };
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -13,8 +25,8 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
   const [selectedLugar, setSelectedLugar] = useState(null);
   const [loading, setLoading] = useState(false);
   const [rutaCalculada, setRutaCalculada] = useState(null);
+  const [mapRef, setMapRef] = useState(null);
 
-  // 🔄 Cargar lugares si estás en la pestaña "filtro"
   useEffect(() => {
     if (!userPosition || activeTab !== 'filtro') return;
 
@@ -28,7 +40,6 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
       .finally(() => setLoading(false));
   }, [activeTab, filtroTipo, userPosition]);
 
-  // 🧭 Dibujar ruta si se recibe desde IA
   useEffect(() => {
     if (!userPosition || !rutaDatos) return;
 
@@ -59,8 +70,13 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
 
   return (
     <LoadScript googleMapsApiKey={apiKey}>
-      <GoogleMap mapContainerStyle={containerStyle} center={userPosition} zoom={16}>
-        {/* 📍 Tu ubicación */}
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={userPosition}
+        zoom={16}
+        onLoad={(map) => setMapRef(map)}
+        options={{ gestureHandling: 'greedy', fullscreenControl: false }}
+      >
         <Marker
           position={userPosition}
           title="Tu ubicación"
@@ -72,7 +88,6 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
           }}
         />
 
-        {/* 📌 Marcadores si estás en "filtro" */}
         {activeTab === 'filtro' && !loading && lugares.length > 0 &&
           lugares.map((lugar, index) => {
             if (!lugar?.coordenadas?.lat || !lugar?.coordenadas?.lng) return null;
@@ -89,7 +104,6 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
             );
           })}
 
-        {/* 🗨️ InfoWindow al hacer clic en un marcador */}
         {selectedLugar && (
           <InfoWindow
             position={{
@@ -102,15 +116,29 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
               <h4>{selectedLugar.nombre}</h4>
               <p>{selectedLugar.direccion}</p>
               <p>⭐ {selectedLugar.rating}</p>
+              {selectedLugar.presupuesto && (
+                <p>💰 Presupuesto: {selectedLugar.presupuesto}</p>
+              )}
             </div>
           </InfoWindow>
         )}
 
-        {/* 🧭 Ruta dibujada si está disponible */}
         {rutaCalculada && (
           <DirectionsRenderer directions={rutaCalculada} />
         )}
       </GoogleMap>
+
+      <div
+        className="precision-button"
+        onClick={() => {
+          if (mapRef && userPosition) {
+            mapRef.panTo(userPosition);
+            mapRef.setZoom(16);
+          }
+        }}
+      >
+        <FaCrosshairs size={22} className="precision-icon" />
+      </div>
     </LoadScript>
   );
 };

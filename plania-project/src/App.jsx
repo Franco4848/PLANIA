@@ -12,8 +12,10 @@ function App() {
   const [userPosition, setUserPosition] = useState(null);
   const [lugaresIA, setLugaresIA] = useState([]);
   const [weather, setWeather] = useState({ weathercode: null, temperature: null });
-  const [rutaDatos, setRutaDatos] = useState(null); // ✅ NUEVO
+  const [rutaDatos, setRutaDatos] = useState(null);
+  const [mapKey, setMapKey] = useState(0); // 🆕 clave para forzar re-render
 
+  // 📍 Obtener ubicación del usuario
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -24,6 +26,7 @@ function App() {
     );
   }, []);
 
+  // 🌤️ Obtener clima y lugares si estás en IA
   useEffect(() => {
     if (activeTab !== 'ia' || !userPosition) return;
 
@@ -41,16 +44,25 @@ function App() {
       .catch((err) => console.error('Error al obtener lugares:', err));
   }, [activeTab, userPosition]);
 
+  // 🧹 Limpiar ruta y forzar re-render al volver al mapa
+  useEffect(() => {
+    if (activeTab === 'mapa') {
+      setRutaDatos(null); // Limpia ruta
+      setMapKey((prev) => prev + 1); // Fuerza re-render del mapa
+    }
+  }, [activeTab]);
+
   return (
     <div className="app-container">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {(activeTab === 'mapa' || activeTab === 'filtro' || activeTab === 'itinerario' || activeTab === 'nube' || activeTab === 'ia') && (
         <Mapa
+          key={mapKey} //  clave para re-render
           filtroTipo={filtroTipo}
           activeTab={activeTab}
           userPosition={userPosition}
-          rutaDatos={rutaDatos} // ✅ PASO A MAPA
+          rutaDatos={rutaDatos}
         />
       )}
 
@@ -73,7 +85,7 @@ function App() {
             weathercode={weather.weathercode}
             temperatura={weather.temperature}
             interesesUsuario={['cine', 'parque', 'museo']}
-            onRutaGenerada={setRutaDatos} // ✅ PASO A IA
+            onRutaGenerada={setRutaDatos}
           />
         </div>
       )}

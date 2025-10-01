@@ -23,6 +23,8 @@
   align-items: center;
   gap: 12px;
   min-height: 60px;
+  max-width: calc(100vw - 40px); /* 🧠 evita scroll lateral */
+  overflow-x: auto;
 }
 
 .filtro-container h4 {

@@ -18,7 +18,7 @@ interface LugarGoogle {
 export class ActividadesService {
   async buscarEnGooglePlaces(lat: string, lng: string, tipo: string) {
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-    const radius = 3000; // 🔽 radio reducido a 3 km
+    const radius = 6000; // 🔽 radio reducido a 3 km
     const baseUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
 
     const tipoTraducido: Record<string, string> = {
@@ -75,7 +75,7 @@ export class ActividadesService {
         if (pagetoken) {
           await new Promise((resolve) => setTimeout(resolve, 2000));
         }
-      } while (pagetoken && attempts < 3);
+      } while (pagetoken && attempts < 5);
     }
 
     return allResults

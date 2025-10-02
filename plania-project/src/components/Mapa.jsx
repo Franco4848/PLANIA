@@ -55,7 +55,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
     );
   }, [rutaDatos, userPosition]);
 
-  if (!userPosition) return <div>Obteniendo tu ubicación...</div>;
+  if (!userPosition) return <p>Obteniendo tu ubicación...</p>;
 
   return (
     <LoadScript googleMapsApiKey={apiKey}>

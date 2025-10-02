@@ -38,3 +38,299 @@
   background-color: #f9f9f9;
   cursor: pointer;
 }
+
+/* Estilos para ChatIA */
+.ia-layout {
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  flex-direction: column;
+}
+
+.chat-ia-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filtros-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.filtro-grupo {
+  margin-bottom: 15px;
+}
+
+.filtro-grupo label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+}
+
+.filtro-grupo input[type="number"] {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filtro-grupo input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+}
+
+.tipos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 14px;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  border-color: #999;
+  background-color: #e8e8e8;
+}
+
+.chip.active {
+  border-color: #4CAF50;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.chat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-section label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+}
+
+.chat-section textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.btn-generar {
+  padding: 12px 24px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-generar:hover {
+  background-color: #45a049;
+}
+
+.btn-generar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* Estilos para ItinerarioPanel */
+.itinerario-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.btn-regenerar {
+  padding: 8px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-regenerar:hover {
+  background-color: #1976D2;
+}
+
+.dias-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.dia-tab {
+  padding: 10px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.dia-tab:hover {
+  border-color: #999;
+  background-color: #f0f0f0;
+}
+
+.dia-tab.active {
+  border-color: #4CAF50;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.dia-tab .tema {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.actividades-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.actividad-card {
+  padding: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actividad-card:hover {
+  border-color: #4CAF50;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.actividad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.actividad-header h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.horario {
+  font-size: 12px;
+  color: #666;
+  background-color: #e3f2fd;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.direccion {
+  font-size: 13px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.actividad-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.rating {
+  color: #f57c00;
+}
+
+.presupuesto {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.descripcion {
+  font-size: 12px;
+  color: #777;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.no-lugares {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+.itinerario-footer {
+  padding-top: 15px;
+  border-top: 2px solid #eee;
+  font-size: 14px;
+}
+
+.recomendaciones {
+  margin-top: 10px;
+}
+
+.recomendaciones ul {
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+.recomendaciones li {
+  margin-bottom: 5px;
+  color: #555;
+  font-size: 13px;
+}

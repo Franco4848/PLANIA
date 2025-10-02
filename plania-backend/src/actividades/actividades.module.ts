@@ -11,5 +11,6 @@ import { ActividadesController } from './actividades.controller';
   ],
   providers: [ActividadesService],
   controllers: [ActividadesController],
+  exports: [ActividadesService],
 })
 export class ActividadesModule {}

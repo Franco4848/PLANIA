@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import Filtro from './components/Filtro';
 import Clima from './components/Clima';
 import ItinerarioInteligente from './components/ItinerarioInteligente';
+import ChatIA from './components/ChatIA';
+import ItinerarioPanel from './components/ItinerarioPanel';
 import './App.css';
 
 function App() {
@@ -12,7 +14,10 @@ function App() {
   const [userPosition, setUserPosition] = useState(null);
   const [lugaresIA, setLugaresIA] = useState([]);
   const [weather, setWeather] = useState({ weathercode: null, temperature: null });
-  const [rutaDatos, setRutaDatos] = useState(null); // ✅ NUEVO
+  const [rutaDatos, setRutaDatos] = useState(null);
+  const [itinerarioGroq, setItinerarioGroq] = useState(null);
+  const [promptOriginal, setPromptOriginal] = useState('');
+  const [filtrosActuales, setFiltrosActuales] = useState(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -67,14 +72,31 @@ function App() {
       )}
 
       {activeTab === 'ia' && (
-        <div className="overlay-content">
-          <ItinerarioInteligente
-            lugares={lugaresIA}
-            weathercode={weather.weathercode}
-            temperatura={weather.temperature}
-            interesesUsuario={['cine', 'parque', 'museo']}
-            onRutaGenerada={setRutaDatos} // ✅ PASO A IA
-          />
+        <div className="overlay-content ia-layout">
+          {!itinerarioGroq ? (
+            <ChatIA
+              userPosition={userPosition}
+              onItinerarioGenerado={(resultado) => {
+                setItinerarioGroq(resultado);
+                setRutaDatos(resultado);
+              }}
+            />
+          ) : (
+            <ItinerarioPanel
+              itinerario={itinerarioGroq.itinerario}
+              lugares={itinerarioGroq.lugares}
+              onLugarClick={(lugar) => {
+                if (lugar.coordenadas) {
+                  // Centrar mapa en el lugar (puedes implementar esto después)
+                  console.log('Click en lugar:', lugar);
+                }
+              }}
+              onRegenerar={() => {
+                setItinerarioGroq(null);
+                setRutaDatos(null);
+              }}
+            />
+          )}
         </div>
       )}
     </div>

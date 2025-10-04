@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
+type LugarSeleccionado = {
+  nombre: string;
+  categoria: string;
+  coordenadas: { lat: number; lng: number };
+};
+
 @Injectable()
 export class IaService {
   async generarRecomendaciones(data: {
     lat: string;
     lng: string;
     intereses: string[];
-  }): Promise<string> {
+  }): Promise<{ respuesta: string; lugares: LugarSeleccionado[] }> {
     console.log('Recibido:', data);
 
     try {
@@ -17,10 +23,11 @@ export class IaService {
       const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
       console.log('Lugares seleccionados:', lugares);
 
-      const prompt = `El usuario está en las coordenadas ${data.lat}, ${data.lng}. Tiene interés en: ${data.intereses.join(', ')}.
-El clima actual es ${clima.descripcion}, con ${clima.temperatura}°C y ${clima.humedad}% de humedad.
-Estas son 3 actividades cercanas, una por cada tipo de interés: ${lugares.join(', ')}.
-Explicá brevemente por qué cada actividad es adecuada, considerando el clima actual.`;
+      const nombresParaPrompt = lugares.map(l => `${l.nombre} (${l.categoria})`);
+      const prompt = `Estás ayudando a un usuario que se encuentra en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
+      Tiene interés en: ${data.intereses.join(', ')}. Estas son 3 actividades cercanas: ${nombresParaPrompt.join(', ')}.
+      Justificá cada una en una sola frase breve, clara y directa.`;
+
 
       const response = await axios.post('http://localhost:11434/api/generate', {
         model: 'mistral',
@@ -29,7 +36,11 @@ Explicá brevemente por qué cada actividad es adecuada, considerando el clima a
       });
 
       console.log('Respuesta IA:', response.data);
-      return response.data.response;
+
+      return {
+        respuesta: response.data.response,
+        lugares
+      };
     } catch (error) {
       console.error('Error IA:', error.response?.data || error.message);
       throw new Error('Error al generar recomendaciones');
@@ -61,8 +72,8 @@ Explicá brevemente por qué cada actividad es adecuada, considerando el clima a
     return mapa[codigo] || 'condición desconocida';
   }
 
-  async obtenerUnaActividadPorTipo(lat: string, lng: string, intereses: string[]): Promise<string[]> {
-    const seleccionados: string[] = [];
+  async obtenerUnaActividadPorTipo(lat: string, lng: string, intereses: string[]): Promise<LugarSeleccionado[]> {
+    const seleccionados: LugarSeleccionado[] = [];
 
     const latNum = parseFloat(lat);
     const lngNum = parseFloat(lng);
@@ -76,13 +87,18 @@ Explicá brevemente por qué cada actividad es adecuada, considerando el clima a
         .map((l: any) => ({
           nombre: l.nombre,
           categoria: l.categoria,
+          coordenadas: l.coordenadas,
           distancia: this.calcularDistancia(latNum, lngNum, l.coordenadas.lat, l.coordenadas.lng)
         }))
         .sort((a, b) => a.distancia - b.distancia);
 
       if (ordenados.length > 0) {
         const elegido = ordenados[0];
-        seleccionados.push(`${elegido.nombre} (${elegido.categoria})`);
+        seleccionados.push({
+          nombre: elegido.nombre,
+          categoria: elegido.categoria,
+          coordenadas: elegido.coordenadas
+        });
       }
     }
 

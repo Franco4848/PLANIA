@@ -27,6 +27,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
   const [rutaCalculada, setRutaCalculada] = useState(null);
   const [mapRef, setMapRef] = useState(null);
 
+  // 🧭 Buscar lugares si estás en filtro
   useEffect(() => {
     if (!userPosition || activeTab !== 'filtro') return;
 
@@ -40,11 +41,16 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
       .finally(() => setLoading(false));
   }, [activeTab, filtroTipo, userPosition]);
 
+  // 🧭 Calcular ruta si estás en itinerario
   useEffect(() => {
-    if (!userPosition || !rutaDatos) return;
+    if (!userPosition || !rutaDatos || activeTab !== 'itinerario') return;
 
     const { destino, waypoints } = rutaDatos;
-    if (!destino || !waypoints || waypoints.length === 0) return;
+    if (
+      !destino?.lat || !destino?.lng ||
+      !Array.isArray(waypoints) ||
+      waypoints.some(wp => !wp.location?.lat || !wp.location?.lng)
+    ) return;
 
     const directionsService = new window.google.maps.DirectionsService();
 
@@ -64,7 +70,14 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
         }
       }
     );
-  }, [rutaDatos, userPosition]);
+  }, [rutaDatos, userPosition, activeTab]);
+
+  // 🧹 Limpiar ruta si salís de itinerario
+  useEffect(() => {
+    if (activeTab !== 'itinerario') {
+      setRutaCalculada(null);
+    }
+  }, [activeTab]);
 
   if (!userPosition) return <div>Obteniendo tu ubicación...</div>;
 
@@ -77,6 +90,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
         onLoad={(map) => setMapRef(map)}
         options={{ gestureHandling: 'greedy', fullscreenControl: false }}
       >
+        {/* 📍 Tu ubicación */}
         <Marker
           position={userPosition}
           title="Tu ubicación"
@@ -88,6 +102,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
           }}
         />
 
+        {/* 📍 Lugares filtrados */}
         {activeTab === 'filtro' && !loading && lugares.length > 0 &&
           lugares.map((lugar, index) => {
             if (!lugar?.coordenadas?.lat || !lugar?.coordenadas?.lng) return null;
@@ -104,6 +119,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
             );
           })}
 
+        {/* 🧠 InfoWindow */}
         {selectedLugar && (
           <InfoWindow
             position={{
@@ -123,11 +139,13 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
           </InfoWindow>
         )}
 
-        {rutaCalculada && (
+        {/* 🧭 Renderizado de ruta solo en itinerario */}
+        {activeTab === 'itinerario' && rutaCalculada && (
           <DirectionsRenderer directions={rutaCalculada} />
         )}
       </GoogleMap>
 
+      {/* 🎯 Botón de precisión */}
       <div
         className="precision-button"
         onClick={() => {

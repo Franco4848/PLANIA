@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 @Injectable()
 export class IaService {
@@ -10,7 +7,6 @@ export class IaService {
     lat: string;
     lng: string;
     intereses: string[];
-    hora: string;
   }): Promise<string> {
     console.log('Recibido:', data);
 
@@ -23,26 +19,17 @@ export class IaService {
 
       const prompt = `El usuario está en las coordenadas ${data.lat}, ${data.lng}. Tiene interés en: ${data.intereses.join(', ')}.
 El clima actual es ${clima.descripcion}, con ${clima.temperatura}°C y ${clima.humedad}% de humedad.
-La hora actual es ${data.hora}.
 Estas son 3 actividades cercanas, una por cada tipo de interés: ${lugares.join(', ')}.
-Justificá por qué cada una es adecuada para el usuario en este momento.`;
+Explicá brevemente por qué cada actividad es adecuada, considerando el clima actual.`;
 
-      const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model: 'mistralai/mistral-7b-instruct',
-          messages: [{ role: 'user', content: prompt }],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      const response = await axios.post('http://localhost:11434/api/generate', {
+        model: 'mistral',
+        prompt,
+        stream: false
+      });
 
       console.log('Respuesta IA:', response.data);
-      return response.data.choices[0].message.content;
+      return response.data.response;
     } catch (error) {
       console.error('Error IA:', error.response?.data || error.message);
       throw new Error('Error al generar recomendaciones');
@@ -103,7 +90,7 @@ Justificá por qué cada una es adecuada para el usuario en este momento.`;
   }
 
   calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const R = 6371; // Radio de la Tierra en km
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
     const a =

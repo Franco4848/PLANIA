@@ -24,7 +24,6 @@ export interface ItinerarioResponseDto {
   itinerario: {
     dias: DiaDto[];
     presupuesto_total: number;
-    recomendaciones?: string[];
   };
   lugares: ActividadDto[];
   destino: {
@@ -39,5 +38,4 @@ export interface ItinerarioResponseDto {
     stopover: boolean;
   }>;
   presupuesto_total: number;
-  recomendaciones: string[];
 }

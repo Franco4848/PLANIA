@@ -12,13 +12,14 @@ export class IaController {
     try {
       return await this.iaService.generarItinerario(dto);
     } catch (error) {
-      console.error('❌ Error en controller:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Error al generar itinerario';
+      console.error('❌ Error en controller:', errorMessage);
       
       // Devolver error más descriptivo
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'Error al generar itinerario',
+          message: errorMessage,
           error: 'IA Service Error',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,

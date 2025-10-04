@@ -3,7 +3,7 @@ import { generarItinerarioInteligente } from '../services/IAcontextual';
 
 export default function ItinerarioInteligente({ lugares, weathercode, temperatura, interesesUsuario, onRutaGenerada }) {
   const [itinerario, setItinerario] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [datosListos, setDatosListos] = useState(false);
 
   useEffect(() => {
@@ -64,12 +64,12 @@ export default function ItinerarioInteligente({ lugares, weathercode, temperatur
 
   return (
     <div>
-      <h2>🧭 Itinerario Inteligente</h2>
+      <h2>Itinerario Inteligente</h2>
 
       {!datosListos ? (
-        <p>🔄 Generando recomendaciones...</p>
+        <p>Generando recomendaciones...</p>
       ) : itinerario.length === 0 ? (
-        <p>⚠️ No se encontraron lugares recomendados.</p>
+        <p>No se encontraron lugares recomendados.</p>
       ) : (
         <ul>
           {itinerario.map((lugar, index) => (

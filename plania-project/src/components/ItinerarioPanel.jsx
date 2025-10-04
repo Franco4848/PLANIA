@@ -1,20 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ItinerarioPanel = ({ itinerario, lugares, onLugarClick, onRegenerar }) => {
+const ItinerarioPanel = ({ itinerario, lugares, onLugarClick, onRegenerar, onActualizarRuta }) => {
   const [diaSeleccionado, setDiaSeleccionado] = useState(1);
+  const [lugaresEditables, setLugaresEditables] = useState(lugares);
+
+  useEffect(() => {
+    setLugaresEditables(lugares);
+  }, [lugares]);
 
   if (!itinerario || !itinerario.dias) {
     return null;
   }
 
-  const lugaresDelDia = lugares.filter((l) => l.dia === diaSeleccionado);
+  const lugaresDelDia = lugaresEditables.filter((l) => l.dia === diaSeleccionado);
+
+  const eliminarActividad = (index) => {
+    const lugarAEliminar = lugaresDelDia[index];
+    const nuevosLugares = lugaresEditables.filter((l) => l !== lugarAEliminar);
+    setLugaresEditables(nuevosLugares);
+    actualizarRuta(nuevosLugares);
+  };
+
+  const actualizarRuta = (nuevosLugares) => {
+    if (nuevosLugares.length === 0 || !onActualizarRuta) return;
+
+    const lugaresConCoordenadas = nuevosLugares.filter((l) => l.coordenadas);
+    if (lugaresConCoordenadas.length === 0) return;
+
+    const destino = lugaresConCoordenadas[lugaresConCoordenadas.length - 1].coordenadas;
+    const waypoints = lugaresConCoordenadas.slice(0, -1).map((lugar) => ({
+      location: lugar.coordenadas,
+      stopover: true,
+    }));
+
+    onActualizarRuta({ destino, waypoints });
+  };
+
+  const mostrarRutaCompleta = () => {
+    actualizarRuta(lugaresEditables);
+  };
 
   return (
     <div className="itinerario-panel">
       <div className="panel-header">
-        <h3>📅 Tu itinerario de {itinerario.dias.length} días</h3>
+        <h3>Tu itinerario de {itinerario.dias.length} días</h3>
         <button onClick={onRegenerar} className="btn-regenerar">
-          🔄 Regenerar
+          Regenerar
         </button>
       </div>
 
@@ -39,22 +70,30 @@ const ItinerarioPanel = ({ itinerario, lugares, onLugarClick, onRegenerar }) => 
             <div
               key={index}
               className="actividad-card"
-              onClick={() => onLugarClick(lugar)}
             >
               <div className="actividad-header">
-                <h4>{lugar.nombreReal || lugar.nombre}</h4>
-                <span className="horario">{lugar.horario}</span>
+                <h4 onClick={() => onLugarClick(lugar)} style={{ cursor: 'pointer' }}>
+                  {lugar.nombreReal || lugar.nombre}
+                </h4>
+                <button
+                  onClick={() => eliminarActividad(index)}
+                  className="btn-eliminar"
+                  title="Eliminar actividad"
+                >
+                  ✕
+                </button>
               </div>
+              <span className="horario">{lugar.horario}</span>
               <p className="direccion">{lugar.direccion}</p>
               <div className="actividad-footer">
                 <span className="rating">⭐ {lugar.rating}</span>
-                <span className="presupuesto">
+                {/*<span className="presupuesto">
                   ${lugar.presupuesto_estimado?.toLocaleString()}
-                </span>
+                </span>*/}
               </div>
-              {lugar.descripcion && (
+              {/*lugar.descripcion && (
                 <p className="descripcion">{lugar.descripcion}</p>
-              )}
+              )*/}
             </div>
           ))
         ) : (
@@ -62,22 +101,15 @@ const ItinerarioPanel = ({ itinerario, lugares, onLugarClick, onRegenerar }) => 
         )}
       </div>
 
-      {/* Resumen */}
+      {/* Resumen y acciones */}
       <div className="itinerario-footer">
         <p>
-          <strong>Presupuesto total:</strong> $
-          {itinerario.presupuesto_total?.toLocaleString()}
+          <strong>Presupuesto total estimado:</strong> $
+          {lugaresEditables.reduce((sum, l) => sum + (l.presupuesto_estimado || 0), 0).toLocaleString()}
         </p>
-        {itinerario.recomendaciones && itinerario.recomendaciones.length > 0 && (
-          <div className="recomendaciones">
-            <strong>💡 Recomendaciones:</strong>
-            <ul>
-              {itinerario.recomendaciones.map((rec, i) => (
-                <li key={i}>{rec}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <button onClick={mostrarRutaCompleta} className="btn-mostrar-ruta">
+          Mostrar ruta
+        </button>
       </div>
     </div>
   );

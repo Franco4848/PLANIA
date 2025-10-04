@@ -4,14 +4,18 @@ import { ActividadesService } from './actividades.service';
 @Controller('actividades')
 export class ActividadesController {
   constructor(private readonly actividadesService: ActividadesService) {}
-
+  
   @Get('buscar')
   async buscar(
     @Query('lat') lat: string,
     @Query('lng') lng: string,
     @Query('tipo') tipo: string,
   ) {
-    const lugares = await this.actividadesService.buscarEnGooglePlaces(lat, lng, tipo);
+    const lugares = await this.actividadesService.buscarEnGooglePlaces(
+      lat,
+      lng,
+      tipo,
+    );
 
     return lugares
       .map((lugar) => {
@@ -22,7 +26,7 @@ export class ActividadesController {
           direccion: lugar.direccion,
           rating: lugar.rating,
           coordenadas: lugar.coordenadas,
-          categoria: traducirCategoria(lugar.tipos?.[0]) ?? 'otro' // 👈 agregado
+          categoria: traducirCategoria(lugar.tipos?.[0]) ?? 'otro', // 👈 agregado
         };
       })
       .filter(Boolean);
@@ -40,8 +44,8 @@ function traducirCategoria(tipo: string | undefined): string {
     movie_theater: 'cine',
     tourist_attraction: 'atracción',
     winery: 'bodega',
-    lodging: 'alojamiento'
+    lodging: 'alojamiento',
   };
 
-  return tipo ? mapa[tipo] ?? tipo : 'otro';
+  return tipo ? (mapa[tipo] ?? tipo) : 'otro';
 }

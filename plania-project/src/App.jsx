@@ -12,12 +12,12 @@ function App() {
   const [activeTab, setActiveTab] = useState('mapa');
   const [filtroTipo, setFiltroTipo] = useState('todas');
   const [userPosition, setUserPosition] = useState(null);
-  const [lugaresIA, setLugaresIA] = useState([]);
-  const [weather, setWeather] = useState({ weathercode: null, temperature: null });
+  const [_lugaresIA, setLugaresIA] = useState([]);
+  const [_weather, setWeather] = useState({ weathercode: null, temperature: null });
   const [rutaDatos, setRutaDatos] = useState(null);
   const [itinerarioGroq, setItinerarioGroq] = useState(null);
-  const [promptOriginal, setPromptOriginal] = useState('');
-  const [filtrosActuales, setFiltrosActuales] = useState(null);
+  //const [promptOriginal, setPromptOriginal] = useState('');
+  //const [filtrosActuales, setFiltrosActuales] = useState(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -87,13 +87,16 @@ function App() {
               lugares={itinerarioGroq.lugares}
               onLugarClick={(lugar) => {
                 if (lugar.coordenadas) {
-                  // Centrar mapa en el lugar (puedes implementar esto después)
+                  // Centrar mapa en el lugar
                   console.log('Click en lugar:', lugar);
                 }
               }}
               onRegenerar={() => {
                 setItinerarioGroq(null);
                 setRutaDatos(null);
+              }}
+              onActualizarRuta={(nuevaRuta) => {
+                setRutaDatos(nuevaRuta);
               }}
             />
           )}

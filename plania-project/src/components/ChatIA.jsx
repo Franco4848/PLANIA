@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { generarItinerario } from '../services/ia';
 
 const TIPOS_DISPONIBLES = [
-  { id: 'museo', label: 'Museos', emoji: '🏛️' },
-  { id: 'restaurante', label: 'Restaurantes', emoji: '🍽️' },
-  { id: 'parque', label: 'Parques', emoji: '🌳' },
-  { id: 'cafetería', label: 'Cafeterías', emoji: '☕' },
-  { id: 'galería', label: 'Galerías', emoji: '🎨' },
-  { id: 'cine', label: 'Cines', emoji: '🎬' },
+  { id: 'museo', label: 'Museos'},
+  { id: 'restaurante', label: 'Restaurantes'},
+  { id: 'parque', label: 'Parques'},
+  { id: 'cafetería', label: 'Cafeterías'},
+  { id: 'galería', label: 'Galerías'},
+  { id: 'cine', label: 'Cines'},
+  {id: 'bodega', label:'Bodegas'},
+  {id: 'atracción', label:'Atracciones'}
 ];
 
 const ChatIA = ({ userPosition, onItinerarioGenerado }) => {
@@ -49,7 +51,7 @@ const ChatIA = ({ userPosition, onItinerarioGenerado }) => {
     } catch (err) {
       const errorMsg = err.message || 'Error al generar itinerario. Intenta nuevamente.';
       setError(errorMsg);
-      console.error('❌ Error completo:', err);
+      console.error('Error completo:', err);
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const ChatIA = ({ userPosition, onItinerarioGenerado }) => {
   return (
     <div className="chat-ia-container">
       <div className="filtros-section">
-        <h3>🎯 Personaliza tu itinerario</h3>
+        <h3>Personaliza tu itinerario</h3>
 
         {/* Días */}
         <div className="filtro-grupo">
@@ -77,8 +79,10 @@ const ChatIA = ({ userPosition, onItinerarioGenerado }) => {
         {/* Presupuesto */}
         <div className="filtro-grupo">
           <label>
-            Presupuesto: ${filtros.presupuesto.min.toLocaleString()} - $
-            {filtros.presupuesto.max.toLocaleString()}
+             Presupuesto: ${filtros.presupuesto.min.toLocaleString()} -
+            {filtros.presupuesto.max === 200000 
+              ? " $200.000+" 
+              : ` $${filtros.presupuesto.max.toLocaleString()}`}
           </label>
           <input
             type="range"
@@ -105,7 +109,7 @@ const ChatIA = ({ userPosition, onItinerarioGenerado }) => {
                 className={`chip ${filtros.tipos.includes(tipo.id) ? 'active' : ''}`}
                 onClick={() => toggleTipo(tipo.id)}
               >
-                {tipo.emoji} {tipo.label}
+                {tipo.label}
               </button>
             ))}
           </div>
@@ -114,7 +118,7 @@ const ChatIA = ({ userPosition, onItinerarioGenerado }) => {
 
       {/* Chat */}
       <div className="chat-section">
-        <label>💬 Describe tu viaje ideal:</label>
+        <label>Describe tu viaje ideal:</label>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}

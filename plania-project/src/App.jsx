@@ -5,7 +5,7 @@ import Filtro from './components/Filtro';
 import Clima from './components/Clima';
 import IAChat from './components/IAChat';
 import ItinerarioInteligente from './components/ItinerarioInteligente';
-import Sugerencias from './components/Sugerencias'; // ✅ nuevo componente
+import Sugerencias from './components/Sugerencias';
 import './App.css';
 
 function App() {
@@ -14,6 +14,8 @@ function App() {
   const [userPosition, setUserPosition] = useState(null);
   const [rutaDatos, setRutaDatos] = useState(null);
   const [actividadesIA, setActividadesIA] = useState([]);
+  const [actividadesVisiblesIA, setActividadesVisiblesIA] = useState([]); // ✅ persistencia visual
+  const [sugerenciasIA, setSugerenciasIA] = useState([]);
   const [justificacionIA, setJustificacionIA] = useState('');
   const [mapKey, setMapKey] = useState(0);
 
@@ -34,11 +36,27 @@ function App() {
     }
   }, [activeTab]);
 
+  const recibirActividadesIA = (lista) => {
+    setActividadesIA(lista);              // para itinerario
+    setActividadesVisiblesIA(lista);      // para IA visual
+  };
+
+  const recibirSugerenciasIA = (lista) => {
+    setSugerenciasIA(lista);
+  };
+
+  const agregarActividadExtra = () => {
+    if (sugerenciasIA.length === 0) return;
+
+    const siguiente = sugerenciasIA[0];
+    setActividadesIA((prev) => [...prev, siguiente]);
+    setSugerenciasIA((prev) => prev.slice(1));
+  };
+
   return (
     <div className="app-container">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* ✅ Mostrar mapa en todas las secciones relevantes */}
       {(activeTab === 'mapa' ||
         activeTab === 'filtro' ||
         activeTab === 'itinerario' ||
@@ -71,9 +89,11 @@ function App() {
           <IAChat
             userPosition={userPosition}
             interesesUsuario={['cine', 'parque', 'museo']}
-            onActividadesGeneradas={setActividadesIA}
+            onActividadesGeneradas={recibirActividadesIA}
+            onSugerenciasGeneradas={recibirSugerenciasIA}
             justificacionIA={justificacionIA}
             setJustificacionIA={setJustificacionIA}
+            actividadesVisiblesIA={actividadesVisiblesIA} // ✅ prop nueva
           />
         </div>
       )}
@@ -84,6 +104,13 @@ function App() {
             actividades={actividadesIA}
             setActividades={setActividadesIA}
             onRutaGenerada={setRutaDatos}
+            userPosition={userPosition}
+            interesesUsuario={['cine', 'parque', 'museo']}
+            justificacionIA={justificacionIA}
+            setJustificacionIA={setJustificacionIA}
+            agregarActividadExtra={agregarActividadExtra}
+            sugerenciasIA={sugerenciasIA}
+            setSugerenciasIA={setSugerenciasIA}
           />
         </div>
       )}

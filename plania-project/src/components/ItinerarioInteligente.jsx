@@ -1,6 +1,17 @@
 import React from 'react';
 
-export default function ItinerarioInteligente({ actividades, setActividades, onRutaGenerada, agregarActividadExtra }) {
+export default function ItinerarioInteligente({
+  actividades,
+  setActividades,
+  onRutaGenerada,
+  userPosition,
+  interesesUsuario,
+  justificacionIA,
+  setJustificacionIA,
+  agregarActividadExtra,
+  sugerenciasIA,
+  setSugerenciasIA
+}) {
   const eliminarActividad = (index) => {
     const nuevas = [...actividades];
     nuevas.splice(index, 1);
@@ -37,9 +48,15 @@ export default function ItinerarioInteligente({ actividades, setActividades, onR
           </ul>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-            <button onClick={agregarActividadExtra}>Agregar actividad</button>
+            <button onClick={agregarActividadExtra} disabled={sugerenciasIA.length === 0}>
+              Agregar actividad
+            </button>
             <button onClick={mostrarRutaEnMapa}>Mostrar ruta</button>
           </div>
+
+          {sugerenciasIA.length === 0 && (
+            <p style={{ marginTop: '10px' }}>✅ Ya se agregaron todas las actividades sugeridas.</p>
+          )}
         </>
       )}
     </div>

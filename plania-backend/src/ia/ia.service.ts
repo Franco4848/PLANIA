@@ -25,7 +25,7 @@ export class IaService {
 
       const nombresParaPrompt = lugares.map(l => `${l.nombre} (${l.categoria})`);
       const prompt = `Estás ayudando a un usuario que se encuentra en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
-Tiene interés en: ${data.intereses.join(', ')}. Estas son 3 actividades cercanas: ${nombresParaPrompt.join(', ')}.
+Tiene interés en: ${data.intereses.join(', ')}. Estas son actividades cercanas: ${nombresParaPrompt.join(', ')}.
 Justificá cada una en una sola frase breve, clara y directa.`;
 
       const response = await axios.post('http://localhost:11434/api/generate', {
@@ -60,6 +60,8 @@ Justificá cada una en una sola frase breve, clara y directa.`;
     );
 
     if (nuevos.length === 0) {
+      console.log('Candidatos:', candidatos.map(c => c.nombre));
+      console.log('Ya usados:', data.actividadesActuales);
       throw new Error('No se encontraron actividades nuevas para sugerir');
     }
 
@@ -127,12 +129,12 @@ Sugerí una nueva actividad cercana que no repita las anteriores. Justificá en 
         }))
         .sort((a, b) => a.distancia - b.distancia);
 
-      if (ordenados.length > 0) {
-        const elegido = ordenados[0];
+      const top2 = ordenados.slice(0, 2); // ✅ solo 2 por categoría
+      for (const lugar of top2) {
         seleccionados.push({
-          nombre: elegido.nombre,
-          categoria: elegido.categoria,
-          coordenadas: elegido.coordenadas
+          nombre: lugar.nombre,
+          categoria: lugar.categoria,
+          coordenadas: lugar.coordenadas
         });
       }
     }

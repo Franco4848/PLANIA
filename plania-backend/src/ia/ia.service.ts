@@ -2,26 +2,12 @@ import { Injectable } from '@nestjs/common';
 import Groq from 'groq-sdk';
 import { ActividadesService } from '../actividades/actividades.service';
 import { GenerarItinerarioDto } from './dto/generar-itinerario.dto';
-import { ItinerarioResponseDto } from './dto/itinerario-response.dto';
+import { ItinerarioResponseDto, ActividadDto, DiaDto } from './dto/itinerario-response.dto';
 
-interface Actividad {
-  tipo: string;
-  nombre: string;
-  horario: string;
-  presupuesto_estimado: number;
-  descripcion?: string;
-}
-
-interface Dia {
-  dia: number;
-  tema?: string;
-  actividades: Actividad[];
-}
-
-interface ItinerarioGroq {
-  dias: Dia[];
+type ItinerarioGroq = {
+  dias: DiaDto[];
   presupuesto_total: number;
-}
+};
 
 @Injectable()
 export class IaService {
@@ -75,9 +61,7 @@ export class IaService {
     filtros: GenerarItinerarioDto['filtros'],
   ): Promise<ItinerarioGroq> {
     try {
-      const tiposPermitidos = filtros.tipos?.length
-        ? filtros.tipos.join(', ')
-        : 'museo, restaurante, parque, cafetería, galería, cine, atracción turística, bodega';
+      // (se omite variable no usada 'tiposPermitidos')
 
       const systemPrompt = `Eres un asistente experto en planificación de viajes. Genera itinerarios en formato JSON estricto.
 
@@ -142,19 +126,20 @@ export class IaService {
         .trim();
 
       try {
-        return JSON.parse(jsonLimpio);
-      } catch (error) {
-        console.error('Error parseando respuesta de Groq:', respuesta);
+        const parsed = JSON.parse(jsonLimpio) as ItinerarioGroq;
+        return parsed;
+      } catch (parseError) {
+        console.error('Error parseando respuesta de Groq:', parseError, 'respuesta:', respuesta);
         throw new Error('La IA no generó un JSON válido');
       }
     } catch (error) {
       console.error(' Error llamando a Groq:', error);
-      
-      // Detectar error de API key inválida
-      if (error.message?.includes('401') || error.message?.includes('Unauthorized') || error.message?.includes('Invalid API Key')) {
+
+      const msg = error instanceof Error ? error.message : String(error);
+      if (msg.includes('401') || msg.includes('Unauthorized') || msg.includes('Invalid API Key')) {
         throw new Error('API Key de Groq inválida. Verifica que tu GROQ_API_KEY en .env sea correcta y no tenga espacios o comillas.');
       }
-      
+
       throw error;
     }
   }
@@ -208,34 +193,50 @@ export class IaService {
     itinerario: ItinerarioGroq,
     userPosition: { lat: number; lng: number },
     filtros: GenerarItinerarioDto['filtros'],
-  ) {
-    const lugaresEnriquecidos: any[] = [];
-    const waypoints: any[] = [];
+  ): Promise<ItinerarioResponseDto> {
+    const lugaresEnriquecidos: ActividadDto[] = [];
+    const waypoints: Array<{ location: { lat: number; lng: number }; stopover: boolean }> = [];
     const lugaresUsados = new Set<string>(); // Trackear lugares ya usados
+
+    type ItinerarioActividad = {
+      tipo: string;
+      nombre: string;
+      horario: string;
+      presupuesto_estimado: number;
+      descripcion?: string;
+    };
+
+    type LugarReal = {
+      nombre: string;
+      direccion?: string;
+      rating?: number | string;
+      tipos?: string[];
+      price_level?: number;
+      coordenadas?: { lat: number; lng: number } | null;
+    };
 
     console.log('Iniciando enriquecimiento con Google Places...');
     console.log('Itinerario generado por Groq:', JSON.stringify(itinerario, null, 2));
 
     for (const dia of itinerario.dias) {
       console.log(`\n Procesando Día ${dia.dia} - ${dia.tema || 'Sin tema'}`);
-      
-      for (const actividad of dia.actividades) {
+      const actividades = (dia.actividades || []) as ItinerarioActividad[];
+
+      for (const actividad of actividades) {
         console.log(`\n   Actividad: ${actividad.nombre} (${actividad.tipo})`);
         console.log(`     Horario: ${actividad.horario}`);
         console.log(`     Presupuesto estimado: $${actividad.presupuesto_estimado}`);
         
         // Buscar lugar real en Google Places
-        let lugaresReales = await this.actividadesService.buscarEnGooglePlaces(
+        let lugaresReales = (await this.actividadesService.buscarEnGooglePlaces(
           userPosition.lat.toString(),
           userPosition.lng.toString(),
           actividad.tipo,
-        );
+        )) as Array<LugarReal | null>;
 
         console.log(`      Encontrados ${lugaresReales.length} lugares de tipo "${actividad.tipo}"`);
 
-        lugaresReales = lugaresReales.filter(
-          (lugar) => lugar && lugar.nombre && !lugaresUsados.has(lugar.nombre),
-        );
+        lugaresReales = lugaresReales.filter((lugar): lugar is LugarReal => !!lugar && !!lugar.nombre && !lugaresUsados.has(lugar.nombre));
         
         if (lugaresReales.length === 0) {
           console.log(`      ⚠️ No se encontraron lugares nuevos de tipo "${actividad.tipo}".`);
@@ -243,15 +244,15 @@ export class IaService {
         }
         
         // 🔹 Seleccionar el primer lugar válido y marcarlo como usado
-        const lugarReal = lugaresReales[0];
+  const lugarReal = lugaresReales[0];
         
         if (!lugarReal) {
           console.log(`      🚫 No se pudo seleccionar un lugar válido para "${actividad.tipo}"`);
           continue;
         }
         
-        lugaresUsados.add(lugarReal.nombre);
-        console.log(`      ✅ Lugar seleccionado: ${lugarReal.nombre} (${lugarReal.rating ?? 'Sin rating'})`);
+  lugaresUsados.add(lugarReal.nombre);
+  console.log(`      ✅ Lugar seleccionado: ${lugarReal.nombre} (${lugarReal.rating ?? 'Sin rating'})`);
 
           if (lugarReal && lugarReal.coordenadas) {
             // Calcular precio realista basado en price_level de Google
@@ -263,23 +264,22 @@ export class IaService {
             
             console.log(`      Precio: Groq estimó $${actividad.presupuesto_estimado}, ajustado a $${precioRealista} (price_level: ${lugarReal.price_level ?? 'N/A'})`);
 
-            lugaresEnriquecidos.push({
-              ...actividad,
+            const actividadEnriquecida: ActividadDto = {
+              tipo: actividad.tipo,
+              nombre: actividad.nombre,
               nombreReal: lugarReal.nombre,
               direccion: lugarReal.direccion,
               rating: lugarReal.rating,
-              coordenadas: lugarReal.coordenadas,
-              presupuesto_estimado: precioRealista, // Usar precio ajustado
+              coordenadas: lugarReal.coordenadas || null,
+              horario: actividad.horario,
+              presupuesto_estimado: precioRealista,
+              descripcion: actividad.descripcion,
               dia: dia.dia,
-            });
+            } as ActividadDto;
 
-            waypoints.push({
-              location: {
-                lat: lugarReal.coordenadas.lat,
-                lng: lugarReal.coordenadas.lng,
-              },
-              stopover: true,
-            });
+            lugaresEnriquecidos.push(actividadEnriquecida);
+
+            waypoints.push({ location: { lat: lugarReal.coordenadas.lat, lng: lugarReal.coordenadas.lng }, stopover: true });
           }
         else {
           console.log(`      No se encontraron lugares de tipo "${actividad.tipo}"`);
@@ -291,18 +291,15 @@ export class IaService {
     console.log(` Lugares únicos usados: ${lugaresUsados.size}`);
 
     // Último lugar como destino
-    const ultimoLugar = lugaresEnriquecidos[lugaresEnriquecidos.length - 1];
-    const destino = ultimoLugar?.coordenadas || userPosition;
+  const ultimoLugar = lugaresEnriquecidos[lugaresEnriquecidos.length - 1];
+  const destino = ultimoLugar?.coordenadas ?? userPosition;
 
     if (lugaresEnriquecidos.length === 0) {
       throw new Error(`No se encontraron lugares de tipo "${filtros.tipos?.join(', ')}" en tu área. Intenta con otros tipos o amplía tu búsqueda.`);
     }
 
     // Recalcular presupuesto total con precios ajustados
-    const presupuestoTotalAjustado = lugaresEnriquecidos.reduce(
-      (sum, lugar) => sum + (lugar.presupuesto_estimado || 0),
-      0
-    );
+    const presupuestoTotalAjustado = lugaresEnriquecidos.reduce((sum, lugar) => sum + (lugar.presupuesto_estimado || 0), 0);
     
     console.log(`Presupuesto total ajustado: $${presupuestoTotalAjustado}`);
       
@@ -317,32 +314,29 @@ export class IaService {
       const factorReduccion = presupuestoMaximo / presupuestoTotalAjustado;
       
       // Ajustar todos los precios proporcionalmente
-      lugaresEnriquecidos.forEach(lugar => {
-        const precioOriginal = lugar.presupuesto_estimado;
+      lugaresEnriquecidos.forEach((lugar) => {
+        const precioOriginal = lugar.presupuesto_estimado || 0;
         lugar.presupuesto_estimado = Math.round(precioOriginal * factorReduccion);
         console.log(`   Ajustado: ${lugar.nombreReal} de $${precioOriginal} a $${lugar.presupuesto_estimado}`);
       });
       
       // Recalcular presupuesto total
-      const presupuestoFinal = lugaresEnriquecidos.reduce(
-        (sum, lugar) => sum + (lugar.presupuesto_estimado || 0),
-        0
-      );
+      const presupuestoFinal = lugaresEnriquecidos.reduce((sum, lugar) => sum + (lugar.presupuesto_estimado || 0), 0);
       
       console.log(`Presupuesto ajustado a: $${presupuestoFinal}`);
       
       return {
-        itinerario: itinerario,
+        itinerario,
         lugares: lugaresEnriquecidos,
-        destino: destino,
+        destino: destino as { lat: number; lng: number },
         waypoints: waypoints.slice(0, -1),
         presupuesto_total: presupuestoFinal,
       };
     }
     return {
-      itinerario: itinerario,
+      itinerario,
       lugares: lugaresEnriquecidos,
-      destino: destino,
+      destino: destino as { lat: number; lng: number },
       waypoints: waypoints.slice(0, -1), // Todos menos el último (que es el destino)
       presupuesto_total: presupuestoTotalAjustado,
     };

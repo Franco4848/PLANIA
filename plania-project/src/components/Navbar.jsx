@@ -57,7 +57,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
     <nav className="navbar-container">
       {/* Encabezado o Logo de la App */}
       <div className="navbar-header">
-        <img src='./public/plania.png' className="logo" alt='logo de PlanIA' />
+        <img src='/plania.png' className="logo" alt='logo de PlanIA' />
       </div>
 
       {/* Cuerpo de la navegación */}

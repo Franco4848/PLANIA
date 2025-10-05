@@ -14,4 +14,14 @@ export class IaController {
   }) {
     return { respuesta: await this.iaService.generarRecomendaciones(body) };
   }
+
+  @Post('recomendar-extra')
+  async recomendarExtra(@Body() body: {
+    lat: string;
+    lng: string;
+    intereses: string[];
+    actividadesActuales: string[];
+  }) {
+    return await this.iaService.generarActividadExtra(body);
+  }
 }

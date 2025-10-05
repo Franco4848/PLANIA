@@ -25,9 +25,8 @@ export class IaService {
 
       const nombresParaPrompt = lugares.map(l => `${l.nombre} (${l.categoria})`);
       const prompt = `Estás ayudando a un usuario que se encuentra en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
-      Tiene interés en: ${data.intereses.join(', ')}. Estas son 3 actividades cercanas: ${nombresParaPrompt.join(', ')}.
-      Justificá cada una en una sola frase breve, clara y directa.`;
-
+Tiene interés en: ${data.intereses.join(', ')}. Estas son 3 actividades cercanas: ${nombresParaPrompt.join(', ')}.
+Justificá cada una en una sola frase breve, clara y directa.`;
 
       const response = await axios.post('http://localhost:11434/api/generate', {
         model: 'mistral',
@@ -45,6 +44,42 @@ export class IaService {
       console.error('Error IA:', error.response?.data || error.message);
       throw new Error('Error al generar recomendaciones');
     }
+  }
+
+  async generarActividadExtra(data: {
+    lat: string;
+    lng: string;
+    intereses: string[];
+    actividadesActuales: string[];
+  }): Promise<{ respuesta: string; lugar: LugarSeleccionado }> {
+    const clima = await this.obtenerClima(data.lat, data.lng);
+    const candidatos = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
+
+    const nuevos = candidatos.filter(
+      (l) => !data.actividadesActuales.includes(l.nombre)
+    );
+
+    if (nuevos.length === 0) {
+      throw new Error('No se encontraron actividades nuevas para sugerir');
+    }
+
+    const elegido = nuevos[0];
+
+    const prompt = `El usuario ya visitó: ${data.actividadesActuales.join(', ')}.
+Está en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
+Tiene interés en: ${data.intereses.join(', ')}.
+Sugerí una nueva actividad cercana que no repita las anteriores. Justificá en una sola frase clara.`;
+
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'mistral',
+      prompt,
+      stream: false
+    });
+
+    return {
+      respuesta: response.data.response,
+      lugar: elegido
+    };
   }
 
   async obtenerClima(lat: string, lng: string): Promise<{ descripcion: string; temperatura: number; humedad: number }> {

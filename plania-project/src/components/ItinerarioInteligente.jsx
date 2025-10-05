@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ItinerarioInteligente({ actividades, setActividades, onRutaGenerada }) {
+export default function ItinerarioInteligente({ actividades, setActividades, onRutaGenerada, agregarActividadExtra }) {
   const eliminarActividad = (index) => {
     const nuevas = [...actividades];
     nuevas.splice(index, 1);
@@ -37,6 +37,7 @@ export default function ItinerarioInteligente({ actividades, setActividades, onR
           </ul>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+            <button onClick={agregarActividadExtra}>Agregar actividad</button>
             <button onClick={mostrarRutaEnMapa}>Mostrar ruta</button>
           </div>
         </>

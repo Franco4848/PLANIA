@@ -5,6 +5,7 @@ import Filtro from './components/Filtro';
 import Clima from './components/Clima';
 import IAChat from './components/IAChat';
 import ItinerarioInteligente from './components/ItinerarioInteligente';
+import Sugerencias from './components/Sugerencias'; // ✅ nuevo componente
 import './App.css';
 
 function App() {
@@ -22,11 +23,10 @@ function App() {
         const { latitude, longitude } = pos.coords;
         setUserPosition({ lat: latitude, lng: longitude });
       },
-      () => setUserPosition({ lat: -32.89, lng: -68.82 })
+      () => setUserPosition({ lat: -32.89, lng: -68.82 }) // fallback Maipú
     );
   }, []);
 
-  // 🔄 Limpiar ruta si salís de "itinerario"
   useEffect(() => {
     if (activeTab !== 'itinerario') {
       setRutaDatos(null);
@@ -38,7 +38,13 @@ function App() {
     <div className="app-container">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {(activeTab === 'mapa' || activeTab === 'filtro' || activeTab === 'itinerario' || activeTab === 'nube' || activeTab === 'ia') && (
+      {/* ✅ Mostrar mapa en todas las secciones relevantes */}
+      {(activeTab === 'mapa' ||
+        activeTab === 'filtro' ||
+        activeTab === 'itinerario' ||
+        activeTab === 'nube' ||
+        activeTab === 'ia' ||
+        activeTab === 'sugerencias') && (
         <Mapa
           key={mapKey}
           filtroTipo={filtroTipo}
@@ -79,6 +85,12 @@ function App() {
             setActividades={setActividadesIA}
             onRutaGenerada={setRutaDatos}
           />
+        </div>
+      )}
+
+      {activeTab === 'sugerencias' && (
+        <div className="overlay-content">
+          <Sugerencias />
         </div>
       )}
     </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import './Navbar.css';
 import {
@@ -6,10 +5,9 @@ import {
   FaMapMarkerAlt,
   FaListAlt,
   FaUser,
-  FaCompass,
   FaCloud,
-  FaFilter,
-  FaRobot // ✅ ícono de IA
+  FaRobot,
+  FaCommentDots
 } from 'react-icons/fa';
 
 const Navbar = ({ activeTab, setActiveTab }) => {
@@ -74,6 +72,15 @@ const Navbar = ({ activeTab, setActiveTab }) => {
         >
           <FaUser size={22} />
           <span className="nav-text">Mi Perfíl</span>
+        </div>
+
+        {/* 7. Sugerencias */}
+        <div
+          className={`nav-item ${activeTab === 'sugerencias' ? 'active' : ''}`}
+          onClick={() => setActiveTab('sugerencias')}
+        >
+          <FaCommentDots size={22} />
+          <span className="nav-text">Sugerencias</span>
         </div>
       </div>
     </nav>

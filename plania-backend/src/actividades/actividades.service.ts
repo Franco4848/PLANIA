@@ -22,6 +22,8 @@ export class ActividadesService {
     const radius = 6000; // 🔽 radio de 6 km
     const baseUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
 
+    const keyword= encodeURIComponent(`${tipo || ''}`.trim());
+
     const tipoTraducido: Record<string, string> = {
       cafetería: 'cafe',
       restaurante: 'restaurant',
@@ -33,7 +35,7 @@ export class ActividadesService {
       plaza: 'park',
       bodega: 'winery',
     };
-
+    
     const tiposTuristicos = [
       'cafe',
       'restaurant',
@@ -45,7 +47,7 @@ export class ActividadesService {
       'lodging',
       'winery',
     ];
-
+    
     const tiposExcluidos = [
       'school',
       'store',
@@ -53,7 +55,7 @@ export class ActividadesService {
       'bank',
       'hospital',
     ];
-
+    
     const tiposAConsultar =
       tipo === 'todas' ? tiposTuristicos : [tipoTraducido[tipo] || tipo];
 
@@ -66,7 +68,7 @@ export class ActividadesService {
       do {
         const url = pagetoken
           ? `${baseUrl}?pagetoken=${pagetoken}&key=${apiKey}`
-          : `${baseUrl}?location=${lat},${lng}&radius=${radius}&type=${tipoGoogle}&key=${apiKey}`;
+          : `${baseUrl}?location=${lat},${lng}&radius=${radius}&type=${tipoGoogle}&key=${apiKey}&keyword=${keyword}`;
 
         const response = await fetch(url);
         const data = (await response.json()) as {

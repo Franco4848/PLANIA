@@ -77,44 +77,51 @@ export class IaService {
     try {
       const tiposPermitidos = filtros.tipos?.length
         ? filtros.tipos.join(', ')
-        : 'museo, restaurante, parque, cafetería, galería, cine, atracción turística';
+        : 'museo, restaurante, parque, cafetería, galería, cine, atracción turística, bodega';
 
       const systemPrompt = `Eres un asistente experto en planificación de viajes. Genera itinerarios en formato JSON estricto.
 
-RESTRICCIONES:
-- Días: ${filtros.dias}
-- Tipos de lugares permitidos: ${tiposPermitidos}
-- Presupuesto total: $${filtros.presupuesto?.min || 0} - $${filtros.presupuesto?.max || 1000000}
+          RESTRICCIONES:
+          - Días: ${filtros.dias}
+          - Tipos de lugares permitidos: (usa solo los nombres EXACTOS de esta lista, sin inventar nuevos): cafetería, restaurante, museo, parque, galería, cine, atracción, plaza, bodega
+          - Presupuesto MÁXIMO TOTAL: $${filtros.presupuesto?.min || 0} - $${filtros.presupuesto?.max || 1000000}
+          - ⚠️ CRÍTICO: El presupuesto_total de tu respuesta NO PUEDE SUPERAR $${filtros.presupuesto?.max || 100000}
 
-FORMATO DE SALIDA (JSON válido, sin markdown):
-{
-  "dias": [
-    {
-      "dia": 1,
-      "tema": "Cultura y arte",
-      "actividades": [
-        {
-          "tipo": "museo",
-          "nombre": "Nombre sugerido del lugar",
-          "horario": "10:00-13:00",
-          "presupuesto_estimado": 5000,
-          "descripcion": "Breve descripción de por qué incluirlo"
-        }
-      ]
-    }
-  ],
-  "presupuesto_total": 45000
-}
+          ⚠️ IMPORTANTE:
+          - SOLO debes incluir actividades de los tipos que el usuario haya indicado explícitamente (por ejemplo, si pidió "museos", no agregues cafeterías, restaurantes, parques ni ningún otro tipo).
+          - NO incluyas lugares de descanso, comida o entretenimiento si no fueron solicitados.
+          - Si se piden únicamente museos, genera solo visitas a museos y exposiciones culturales.
+          - Cada actividad debe ser coherente con el tipo indicado y el tema general del día.
+          FORMATO DE SALIDA (JSON válido, sin markdown):
+          {
+            "dias": [
+              {
+                "dia": 1,
+                "tema": "Cultura y arte",
+                "actividades": [
+                  {
+                    "tipo": "museo",
+                    "nombre": "Nombre sugerido del lugar",
+                    "horario": "10:00-13:00",
+                    "presupuesto_estimado": 5000,
+                    "descripcion": "Breve descripción de por qué incluirlo"
+                  }
+                ]
+              }
+            ],
+            "presupuesto_total": 45000
+          }
 
-REGLAS:
-1. Solo usa tipos de la lista permitida
-2. Nombres de lugares deben ser genéricos o conocidos (ej: "Museo de arte moderno", "Restaurante de parrilla")
-3. Horarios realistas (formato HH:MM-HH:MM)
-4. Presupuestos en pesos argentinos (usa rangos: cafetería 8000-10000, restaurante 20000-40000, museo 0-2000, parque 0-2000, atracción 2000-12000, bodega 5000-15000)
-5. 3-5 actividades por día
-6. Respeta el presupuesto total
-7. IMPORTANTE: Responde SOLO con el JSON, sin texto adicional ni markdown
-8. NO incluyas campo "recomendaciones" en la respuesta`;
+          REGLAS:
+          1. Solo usa tipos de la lista permitida
+          2. Nombres de lugares deben ser genéricos o conocidos (ej: "Museo de arte moderno", "Restaurante de parrilla")
+          3. Horarios realistas (formato HH:MM-HH:MM)
+          4. Presupuestos en pesos argentinos (usa rangos: cafetería 8000-10000, restaurante 20000-40000, museo 0-2000, parque 0-2000, atracción 2000-12000, bodega 5000-15000)
+          5. 3-5 actividades por día
+          6. ⚠️ CRÍTICO: El campo "presupuesto_total" DEBE ser menor o igual a $${filtros.presupuesto?.max || 100000}
+          7. IMPORTANTE: Responde SOLO con el JSON, sin texto adicional ni markdown
+          8. NO incluyas campo "recomendaciones" en la respuesta
+          9.IMPORTANTE: No uses sinónimos o variaciones, solo los tipos listados exactamente.`;
 
       const chatCompletion = await this.groq.chat.completions.create({
         messages: [
@@ -189,11 +196,13 @@ REGLAS:
     const precioBase = rangoTipo[priceLevel] || precioGroq;
 
     // Agregar variación aleatoria ±20% para más realismo
-    const variacion = precioBase * 0.2;
+    const variacion = precioBase * 0.1;
     const precioFinal = Math.round(precioBase + (Math.random() * variacion * 2 - variacion));
 
     return Math.max(0, precioFinal); // No puede ser negativo
   }
+
+  
 
   private async enriquecerConLugares(
     itinerario: ItinerarioGroq,
@@ -216,7 +225,7 @@ REGLAS:
         console.log(`     Presupuesto estimado: $${actividad.presupuesto_estimado}`);
         
         // Buscar lugar real en Google Places
-        const lugaresReales = await this.actividadesService.buscarEnGooglePlaces(
+        let lugaresReales = await this.actividadesService.buscarEnGooglePlaces(
           userPosition.lat.toString(),
           userPosition.lng.toString(),
           actividad.tipo,
@@ -224,24 +233,25 @@ REGLAS:
 
         console.log(`      Encontrados ${lugaresReales.length} lugares de tipo "${actividad.tipo}"`);
 
-        if (lugaresReales.length > 0) {
-          // Buscar un lugar que NO hayamos usado antes
-          let lugarReal: any = null;
-          for (const lugar of lugaresReales) {
-            if (lugar && lugar.nombre && !lugaresUsados.has(lugar.nombre)) {
-              lugarReal = lugar;
-              lugaresUsados.add(lugar.nombre);
-              break;
-            }
-          }
-
-          // Si todos están usados, tomar el primero disponible
-          if (!lugarReal && lugaresReales[0]) {
-            lugarReal = lugaresReales[0];
-            console.log(`       Todos los lugares ya fueron usados, repitiendo: ${lugarReal.nombre}`);
-          } else if (lugarReal) {
-            console.log(`      Lugar seleccionado: ${lugarReal.nombre} ( ${lugarReal.rating})`);
-          }
+        lugaresReales = lugaresReales.filter(
+          (lugar) => lugar && lugar.nombre && !lugaresUsados.has(lugar.nombre),
+        );
+        
+        if (lugaresReales.length === 0) {
+          console.log(`      ⚠️ No se encontraron lugares nuevos de tipo "${actividad.tipo}".`);
+          continue; // simplemente omite esta actividad, sin ampliar radio
+        }
+        
+        // 🔹 Seleccionar el primer lugar válido y marcarlo como usado
+        const lugarReal = lugaresReales[0];
+        
+        if (!lugarReal) {
+          console.log(`      🚫 No se pudo seleccionar un lugar válido para "${actividad.tipo}"`);
+          continue;
+        }
+        
+        lugaresUsados.add(lugarReal.nombre);
+        console.log(`      ✅ Lugar seleccionado: ${lugarReal.nombre} (${lugarReal.rating ?? 'Sin rating'})`);
 
           if (lugarReal && lugarReal.coordenadas) {
             // Calcular precio realista basado en price_level de Google
@@ -271,17 +281,8 @@ REGLAS:
               stopover: true,
             });
           }
-        } else {
+        else {
           console.log(`      No se encontraron lugares de tipo "${actividad.tipo}"`);
-          // Si no se encuentra, mantener la sugerencia de la IA
-          lugaresEnriquecidos.push({
-            ...actividad,
-            nombreReal: actividad.nombre,
-            direccion: 'Ubicación no encontrada',
-            rating: 'N/A',
-            coordenadas: null,
-            dia: dia.dia,
-          });
         }
       }
     }
@@ -293,14 +294,51 @@ REGLAS:
     const ultimoLugar = lugaresEnriquecidos[lugaresEnriquecidos.length - 1];
     const destino = ultimoLugar?.coordenadas || userPosition;
 
+    if (lugaresEnriquecidos.length === 0) {
+      throw new Error(`No se encontraron lugares de tipo "${filtros.tipos?.join(', ')}" en tu área. Intenta con otros tipos o amplía tu búsqueda.`);
+    }
+
     // Recalcular presupuesto total con precios ajustados
     const presupuestoTotalAjustado = lugaresEnriquecidos.reduce(
       (sum, lugar) => sum + (lugar.presupuesto_estimado || 0),
       0
     );
-
+    
+    console.log(`Presupuesto total ajustado: $${presupuestoTotalAjustado}`);
+      
     console.log(`Presupuesto total ajustado: $${presupuestoTotalAjustado}`);
 
+// Validar que no exceda el presupuesto máximo
+    const presupuestoMaximo = filtros.presupuesto?.max || 1000000;
+    if (presupuestoTotalAjustado > presupuestoMaximo) {
+      console.log(`⚠️ Presupuesto excedido ($${presupuestoTotalAjustado} > $${presupuestoMaximo}). Ajustando...`);
+      
+      // Calcular factor de reducción proporcional
+      const factorReduccion = presupuestoMaximo / presupuestoTotalAjustado;
+      
+      // Ajustar todos los precios proporcionalmente
+      lugaresEnriquecidos.forEach(lugar => {
+        const precioOriginal = lugar.presupuesto_estimado;
+        lugar.presupuesto_estimado = Math.round(precioOriginal * factorReduccion);
+        console.log(`   Ajustado: ${lugar.nombreReal} de $${precioOriginal} a $${lugar.presupuesto_estimado}`);
+      });
+      
+      // Recalcular presupuesto total
+      const presupuestoFinal = lugaresEnriquecidos.reduce(
+        (sum, lugar) => sum + (lugar.presupuesto_estimado || 0),
+        0
+      );
+      
+      console.log(`Presupuesto ajustado a: $${presupuestoFinal}`);
+      
+      return {
+        itinerario: itinerario,
+        lugares: lugaresEnriquecidos,
+        destino: destino,
+        waypoints: waypoints.slice(0, -1),
+        presupuesto_total: presupuestoFinal,
+      };
+    }
     return {
       itinerario: itinerario,
       lugares: lugaresEnriquecidos,

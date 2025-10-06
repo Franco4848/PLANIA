@@ -13,8 +13,18 @@ export class IaService {
     lat: string;
     lng: string;
     intereses: string[];
+    presupuesto: number;
   }): Promise<{ respuesta: string; lugares: LugarSeleccionado[] }> {
-    console.log('Recibido:', data);
+    if (typeof data.presupuesto !== 'number' || isNaN(data.presupuesto)) {
+      throw new Error('Presupuesto inválido: debe ser un número');
+    }
+
+    console.log('Recibido:', {
+      lat: data.lat,
+      lng: data.lng,
+      intereses: data.intereses,
+      presupuesto: data.presupuesto
+    });
 
     try {
       const clima = await this.obtenerClima(data.lat, data.lng);
@@ -23,10 +33,22 @@ export class IaService {
       const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
       console.log('Lugares seleccionados:', lugares);
 
-      const nombresParaPrompt = lugares.map(l => `${l.nombre} (${l.categoria})`);
-      const prompt = `Estás ayudando a un usuario que se encuentra en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
-Tiene interés en: ${data.intereses.join(', ')}. Estas son actividades cercanas: ${nombresParaPrompt.join(', ')}.
-Justificá cada una en una sola frase breve, clara y directa.`;
+      const nombresParaPrompt = lugares.map((l, i) => `${i + 1}. ${l.nombre} (${l.categoria})`);
+
+      const prompt = `
+Estás ayudando a un usuario ubicado en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
+Tiene interés en: ${data.intereses.join(', ')}.
+Presupuesto disponible: $${data.presupuesto} USD.
+
+Actividades cercanas disponibles:
+${nombresParaPrompt.join('\n')}
+
+Generá una lista numerada con:
+- Un costo estimado en USD por actividad
+- Una frase breve que justifique por qué es adecuada
+Asegurate de que las actividades recomendadas estén dentro del presupuesto disponible.
+Incluí el costo estimado en formato "$X USD" al comienzo de cada línea.
+`.trim();
 
       const response = await axios.post('http://localhost:11434/api/generate', {
         model: 'mistral',
@@ -34,14 +56,18 @@ Justificá cada una en una sola frase breve, clara y directa.`;
         stream: false
       });
 
-      console.log('Respuesta IA:', response.data);
+      const texto = typeof response.data.response === 'string'
+        ? response.data.response
+        : '[Respuesta no disponible]';
 
+      console.log('🧠 Respuesta IA:', texto);
+      
       return {
-        respuesta: response.data.response,
-        lugares
+      respuesta: response.data.response, // ✅ solo el string
+      lugares
       };
     } catch (error) {
-      console.error('Error IA:', error.response?.data || error.message);
+      console.error('❌ Error IA:', error.response?.data || error.message);
       throw new Error('Error al generar recomendaciones');
     }
   }
@@ -60,17 +86,20 @@ Justificá cada una en una sola frase breve, clara y directa.`;
     );
 
     if (nuevos.length === 0) {
-      console.log('Candidatos:', candidatos.map(c => c.nombre));
-      console.log('Ya usados:', data.actividadesActuales);
+      console.log('⚠️ Candidatos:', candidatos.map(c => c.nombre));
+      console.log('🗂️ Ya usados:', data.actividadesActuales);
       throw new Error('No se encontraron actividades nuevas para sugerir');
     }
 
     const elegido = nuevos[0];
 
-    const prompt = `El usuario ya visitó: ${data.actividadesActuales.join(', ')}.
+    const prompt = `
+El usuario ya visitó: ${data.actividadesActuales.join(', ')}.
 Está en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
 Tiene interés en: ${data.intereses.join(', ')}.
-Sugerí una nueva actividad cercana que no repita las anteriores. Justificá en una sola frase clara.`;
+Sugerí una nueva actividad cercana que no repita las anteriores.
+Estimá un costo aproximado en USD y justificá en una sola frase clara.
+`.trim();
 
     const response = await axios.post('http://localhost:11434/api/generate', {
       model: 'mistral',
@@ -78,8 +107,12 @@ Sugerí una nueva actividad cercana que no repita las anteriores. Justificá en 
       stream: false
     });
 
+    const texto = typeof response.data.response === 'string'
+      ? response.data.response
+      : '[Respuesta no disponible]';
+
     return {
-      respuesta: response.data.response,
+      respuesta: texto,
       lugar: elegido
     };
   }
@@ -129,7 +162,7 @@ Sugerí una nueva actividad cercana que no repita las anteriores. Justificá en 
         }))
         .sort((a, b) => a.distancia - b.distancia);
 
-      const top2 = ordenados.slice(0, 2); // ✅ solo 2 por categoría
+      const top2 = ordenados.slice(0, 2);
       for (const lugar of top2) {
         seleccionados.push({
           nombre: lugar.nombre,

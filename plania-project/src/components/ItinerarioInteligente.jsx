@@ -30,6 +30,17 @@ export default function ItinerarioInteligente({
     onRutaGenerada({ destino, waypoints });
   };
 
+  const extraerCosto = (nombre, texto) => {
+    const lineas = texto.split('\n');
+    for (const linea of lineas) {
+      if (linea.toLowerCase().includes(nombre.toLowerCase())) {
+        const match = linea.match(/\$\d+(\.\d{1,2})?/);
+        return match ? match[0] : 'Gratis';
+      }
+    }
+    return null;
+  };
+
   return (
     <div>
       <h2>📋 Itinerario</h2>
@@ -39,12 +50,17 @@ export default function ItinerarioInteligente({
       ) : (
         <>
           <ul>
-            {actividades.map((act, index) => (
-              <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <strong>{act.nombre} ({act.categoria})</strong>
-                <button onClick={() => eliminarActividad(index)} style={{ marginLeft: '10px' }}>Eliminar</button>
-              </li>
-            ))}
+            {actividades.map((act, index) => {
+              const costo = extraerCosto(act.nombre, justificacionIA);
+              return (
+                <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>
+                    <strong>{act.nombre}</strong> ({act.categoria}) {costo && <span>– <strong>{costo}</strong></span>}
+                  </span>
+                  <button onClick={() => eliminarActividad(index)} style={{ marginLeft: '10px' }}>Eliminar</button>
+                </li>
+              );
+            })}
           </ul>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>

@@ -82,11 +82,12 @@ export default function IAChat({
   };
 
   const extraerCosto = (nombre, texto) => {
-    const regex = new RegExp(`\\$\\d+(\\.\\d{1,2})?\\s*USD?\\s*-\\s*${nombre}`, 'i');
-    const match = texto.match(regex);
-    if (match) {
-      const precio = match[0].match(/\$\d+(\.\d{1,2})?/);
-      return precio ? precio[0] : null;
+    const lineas = texto.split('\n');
+    for (const linea of lineas) {
+      if (linea.toLowerCase().includes(nombre.toLowerCase())) {
+        const match = linea.match(/\$\d+(\.\d{1,2})?/);
+        return match ? match[0] : 'Gratis';
+      }
     }
     return null;
   };

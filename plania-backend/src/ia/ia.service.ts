@@ -43,18 +43,28 @@ Presupuesto: $${data.presupuesto} USD.
 Actividades cercanas:
 ${nombresParaPrompt.join('\n')}
 
-Generá una lista numerada con:
-- Comenzá cada actividad con un costo estimado real en dólares, por ejemplo: "$15 USD".
-- Justificación breve en español
-Solo actividades dentro del presupuesto.
+Generá una lista numerada con este formato:
+1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español que describa la actividad, sin usar "Descripción:, ni asociar la descripciones a paises"]
+
+- Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
+- Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario. No uses las palabras "gratuito", "gratuita" ni "gratuidad". Usá siempre "gratis" en la descripción.
 `.trim();
 
+      const start = Date.now();
+
       const response = await axios.post('http://localhost:11434/api/generate', {
-        model: 'mistral',
+        model: 'phi4-mini',
         prompt,
         stream: false,
-        max_tokens: 300
+        options: {
+          temperature: 0.7,
+          top_p: 0.9,
+          max_tokens: 260
+        }
       });
+
+      const duration = (Date.now() - start) / 1000;
+      console.log(`⏱️ Tiempo de respuesta IA (phi4-mini): ${duration.toFixed(2)} segundos`);
 
       const texto = typeof response.data.response === 'string'
         ? response.data.response
@@ -99,15 +109,27 @@ Intereses: ${data.intereses.join(', ')}.
 Ya visitó: ${data.actividadesActuales.join(', ')}.
 
 Sugerí una nueva actividad cercana que no repita las anteriores.
-Estimá un costo aproximado en USD y justificá en una sola frase clara.
+Usá este formato:
+Nombre (categoría)
+Costo estimado: $X USD
+Descripción: [una frase breve en español]
 `.trim();
 
+    const start = Date.now();
+
     const response = await axios.post('http://localhost:11434/api/generate', {
-      model: 'mistral',
+      model: 'phi4-mini',
       prompt,
       stream: false,
-      max_tokens: 300
+      options: {
+        temperature: 0.7,
+        top_p: 0.9,
+        max_tokens: 250
+      }
     });
+
+    const duration = (Date.now() - start) / 1000;
+    console.log(`⏱️ Tiempo de respuesta IA (phi4-mini): ${duration.toFixed(2)} segundos`);
 
     const texto = typeof response.data.response === 'string'
       ? response.data.response

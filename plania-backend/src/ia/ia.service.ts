@@ -36,24 +36,24 @@ export class IaService {
       const nombresParaPrompt = lugares.map((l, i) => `${i + 1}. ${l.nombre} (${l.categoria})`);
 
       const prompt = `
-Estás ayudando a un usuario ubicado en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
-Tiene interés en: ${data.intereses.join(', ')}.
-Presupuesto disponible: $${data.presupuesto} USD.
+Ubicación: ${data.lat}, ${data.lng}, clima: ${clima.descripcion}, ${clima.temperatura}°C.
+Intereses: ${data.intereses.join(', ')}.
+Presupuesto: $${data.presupuesto} USD.
 
-Actividades cercanas disponibles:
+Actividades cercanas:
 ${nombresParaPrompt.join('\n')}
 
 Generá una lista numerada con:
-- Un costo estimado en USD por actividad
-- Una frase breve que justifique por qué es adecuada
-Asegurate de que las actividades recomendadas estén dentro del presupuesto disponible.
-Incluí el costo estimado en formato "$X USD" al comienzo de cada línea.
+- Comenzá cada actividad con un costo estimado real en dólares, por ejemplo: "$15 USD".
+- Justificación breve en español
+Solo actividades dentro del presupuesto.
 `.trim();
 
       const response = await axios.post('http://localhost:11434/api/generate', {
         model: 'mistral',
         prompt,
-        stream: false
+        stream: false,
+        max_tokens: 300
       });
 
       const texto = typeof response.data.response === 'string'
@@ -61,10 +61,10 @@ Incluí el costo estimado en formato "$X USD" al comienzo de cada línea.
         : '[Respuesta no disponible]';
 
       console.log('🧠 Respuesta IA:', texto);
-      
+
       return {
-      respuesta: response.data.response, // ✅ solo el string
-      lugares
+        respuesta: texto,
+        lugares
       };
     } catch (error) {
       console.error('❌ Error IA:', error.response?.data || error.message);
@@ -94,9 +94,10 @@ Incluí el costo estimado en formato "$X USD" al comienzo de cada línea.
     const elegido = nuevos[0];
 
     const prompt = `
-El usuario ya visitó: ${data.actividadesActuales.join(', ')}.
-Está en ${data.lat}, ${data.lng}, con clima ${clima.descripcion} y ${clima.temperatura}°C.
-Tiene interés en: ${data.intereses.join(', ')}.
+Ubicación: ${data.lat}, ${data.lng}, clima: ${clima.descripcion}, ${clima.temperatura}°C.
+Intereses: ${data.intereses.join(', ')}.
+Ya visitó: ${data.actividadesActuales.join(', ')}.
+
 Sugerí una nueva actividad cercana que no repita las anteriores.
 Estimá un costo aproximado en USD y justificá en una sola frase clara.
 `.trim();
@@ -104,7 +105,8 @@ Estimá un costo aproximado en USD y justificá en una sola frase clara.
     const response = await axios.post('http://localhost:11434/api/generate', {
       model: 'mistral',
       prompt,
-      stream: false
+      stream: false,
+      max_tokens: 300
     });
 
     const texto = typeof response.data.response === 'string'

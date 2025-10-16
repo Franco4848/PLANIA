@@ -44,7 +44,7 @@ Actividades cercanas:
 ${nombresParaPrompt.join('\n')}
 
 Generá una lista numerada con este formato:
-1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español que describa la actividad, sin usar "Descripción:, ni asociar la descripciones a paises"]
+1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español que describa la actividad, sin usar "Descripción:, ni asociar la descripciones a paises, por ejemplo en la descripcion del museo nacional del vino me colocas Chile, eso no lo quiero"]
 
 - Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
 - Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario. No uses las palabras "gratuito", "gratuita" ni "gratuidad". Usá siempre "gratis" en la descripción.

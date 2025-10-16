@@ -17,12 +17,6 @@ const Filtro = ({ filtroTipo, setFiltroTipo }) => {
         <option value="bodega">Bodegas</option>
       </select>
 
-      <input type="number" placeholder="Presupuesto (USD)" style={{ marginBottom: '0.6rem', width: '100%' }} />
-      <input type="number" placeholder="Días disponibles" style={{ marginBottom: '0.6rem', width: '100%' }} />
-
-      <button disabled style={{ backgroundColor: '#ccc', cursor: 'not-allowed', width: '100%' }}>
-        Aplicar filtros
-      </button>
     </div>
   );
 };

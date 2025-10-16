@@ -128,12 +128,28 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
             }}
             onCloseClick={() => setSelectedLugar(null)}
           >
-            <div style={{ maxWidth: '200px' }}>
+            <div style={{ maxWidth: '220px' }}>
               <h4>{selectedLugar.nombre}</h4>
               <p>{selectedLugar.direccion}</p>
               <p>⭐ {selectedLugar.rating}</p>
+
+              {selectedLugar.telefono && (
+                <p>📞 Teléfono: {selectedLugar.telefono}</p>
+              )}
+
               {selectedLugar.presupuesto && (
                 <p>💰 Presupuesto: {selectedLugar.presupuesto}</p>
+              )}
+
+              {selectedLugar.horarios && selectedLugar.horarios.length > 0 && (
+                <div>
+                  <p>🕒 Horarios:</p>
+                  <ul style={{ paddingLeft: '16px', marginTop: '-8px' }}>
+                    {selectedLugar.horarios.map((linea, idx) => (
+                      <li key={idx} style={{ fontSize: '0.85em' }}>{linea}</li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
           </InfoWindow>
@@ -162,3 +178,4 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
 };
 
 export default Mapa;
+  

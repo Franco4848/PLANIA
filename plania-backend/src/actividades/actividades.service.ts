@@ -6,6 +6,7 @@ interface LugarGoogle {
   vicinity: string;
   rating?: number;
   types?: string[];
+  place_id?: string;
   geometry: {
     location: {
       lat: number;
@@ -18,7 +19,11 @@ interface LugarGoogle {
 export class ActividadesService {
   async buscarEnGooglePlaces(lat: string, lng: string, tipo: string) {
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
-    const radius = 3000; // 🔽 radio reducido a 3 km
+    if (!apiKey) {
+      throw new Error('Falta GOOGLE_PLACES_API_KEY en las variables de entorno');
+    }
+
+    const radius = 3000;
     const baseUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
 
     const tipoTraducido: Record<string, string> = {
@@ -78,16 +83,23 @@ export class ActividadesService {
       } while (pagetoken && attempts < 3);
     }
 
-    return allResults
+    const lugaresFiltrados = allResults
       .filter((lugar) => {
         const tipos = lugar.types ?? [];
         return !tipos.some((t) => tiposExcluidos.includes(t));
       })
-      .map((lugar) => {
+      .map(async (lugar) => {
         const coordenadas = lugar.geometry?.location;
-        if (!coordenadas || typeof coordenadas.lat !== 'number' || typeof coordenadas.lng !== 'number') {
+        if (
+          !coordenadas ||
+          typeof coordenadas.lat !== 'number' ||
+          typeof coordenadas.lng !== 'number' ||
+          !lugar.place_id
+        ) {
           return null;
         }
+
+        const detalles = await this.obtenerDetallesLugar(lugar.place_id, apiKey);
 
         return {
           nombre: lugar.name,
@@ -95,8 +107,50 @@ export class ActividadesService {
           rating: lugar.rating ?? 'Sin rating',
           tipos: lugar.types ?? [],
           coordenadas,
+          telefono: detalles.telefono ?? null,
+          horarios: detalles.horarios ?? []
         };
-      })
-      .filter(Boolean);
+      });
+
+    return (await Promise.all(lugaresFiltrados)).filter(Boolean);
+  }
+
+  async obtenerDetallesLugar(placeId: string, apiKey: string) {
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=formatted_phone_number,opening_hours&key=${apiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const telefono = data.result?.formatted_phone_number ?? null;
+    const horariosEn = data.result?.opening_hours?.weekday_text ?? [];
+
+    const traduccionDias: Record<string, string> = {
+      'Monday': 'Lunes',
+      'Tuesday': 'Martes',
+      'Wednesday': 'Miércoles',
+      'Thursday': 'Jueves',
+      'Friday': 'Viernes',
+      'Saturday': 'Sábado',
+      'Sunday': 'Domingo'
+    };
+
+    const horariosEs = horariosEn.map((linea: string) => {
+      const [diaEn, resto] = linea.split(': ');
+      const diaEs = traduccionDias[diaEn] ?? diaEn;
+
+      if (!resto) return diaEs;
+
+      const texto = resto
+        .replace('Closed', 'Cerrado')
+        .replace('Open 24 hours', 'Abierto 24 horas')
+        .replace(/AM|PM/g, '')
+        .replace(/\u202f/g, '') // elimina espacios finos
+
+      return `${diaEs}: ${texto.trim()}`;
+    });
+
+    return {
+      telefono,
+      horarios: horariosEs
+    };
   }
 }

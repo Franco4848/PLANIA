@@ -22,7 +22,9 @@ export class ActividadesController {
           direccion: lugar.direccion,
           rating: lugar.rating,
           coordenadas: lugar.coordenadas,
-          categoria: traducirCategoria(lugar.tipos?.[0]) ?? 'otro' // 👈 agregado
+          categoria: traducirCategoria(lugar.tipos?.[0]) ?? 'otro',
+          telefono: lugar.telefono ?? null,
+          horarios: lugar.horarios ?? []
         };
       })
       .filter(Boolean);
@@ -32,7 +34,7 @@ export class ActividadesController {
 // 🔠 Traductor simple de categorías de Google a español
 function traducirCategoria(tipo: string | undefined): string {
   const mapa: Record<string, string> = {
-    cafe: 'cafeteria',
+    cafe: 'cafetería',
     restaurant: 'restaurante',
     museum: 'museo',
     park: 'parque',

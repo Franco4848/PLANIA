@@ -92,8 +92,8 @@ function App() {
             onActividadesGeneradas={recibirActividadesIA}
             onSugerenciasGeneradas={recibirSugerenciasIA}
             justificacionIA={justificacionIA}
-            setJustificacionIA={setJustificacionIA}
-            actividadesVisiblesIA={actividadesVisiblesIA} // ✅ prop nueva
+            setJustificacionIA={setJustificacionIA} 
+            actividadesVisiblesIA={actividadesVisiblesIA}
           />
         </div>
       )}

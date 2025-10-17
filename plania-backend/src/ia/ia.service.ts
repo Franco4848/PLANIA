@@ -39,46 +39,54 @@ export class IaService {
       console.log('Clima:', clima);
 
       const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
-      console.log('Lugares seleccionados:', lugares);
 
-      const nombresParaPrompt = lugares.map((l, i) => `${i + 1}. ${l.nombre} (${l.categoria})`);
+      const maxActividades = data.dias === 1 ? 5 : data.dias === 2 ? 6 : 8;
+
+      const lugaresLimitados = lugares.slice(0, maxActividades);
+      console.log('Lugares seleccionados:', lugaresLimitados);
+
+      const nombresParaPrompt = lugaresLimitados.map((l, i) => `${i + 1}. ${l.nombre} (${l.categoria})`);
 
       const formatoDias = Array.from({ length: data.dias }, (_, i) => {
         return `📅 Día ${i + 1}:\n1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español]`;
       }).join('\n\n');
 
       const cierre = `
-No escribas ningún otro bloque. No escribas “Día ${data.dias + 1}” ni actividades adicionales. Finalizá el texto después del último punto del Día ${data.dias}.
-`.trim();
+      Finalizá el texto después del último punto del Día ${data.dias}. No escribas “Día ${data.dias + 1}”, ni resúmenes, ni totales, ni frases adicionales.
+      `.trim();
 
       const prompt = `
-Ubicación: ${data.lat}, ${data.lng}, clima: ${clima.descripcion}, ${clima.temperatura}°C.
-Intereses: ${data.intereses.join(', ')}.
-Presupuesto: $${data.presupuesto} USD.
-Grupo: ${data.personas} persona${data.personas > 1 ? 's' : ''}.
-Duración: ${data.dias} día${data.dias > 1 ? 's' : ''}.
+      IMPORTANTE: Generá exactamente ${data.dias} día${data.dias > 1 ? 's' : ''} de actividades. No escribas más días. Usá solo ${lugaresLimitados.length} actividades en total. No inventes actividades adicionales.
 
-Actividades cercanas:
-${nombresParaPrompt.join('\n')}
+      Ubicación: ${data.lat}, ${data.lng}, clima: ${clima.descripcion}, ${clima.temperatura}°C.
+      Intereses: ${data.intereses.join(', ')}.
+      Presupuesto: $${data.presupuesto} USD.
+      Grupo: ${data.personas} persona${data.personas > 1 ? 's' : ''}.
+      Duración: ${data.dias} día${data.dias > 1 ? 's' : ''}.
 
-Distribuí todas las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}, de forma equitativa. No sobrecargues ni vacíes ningún día. Si hay 6 actividades y 3 días, repartí 2 por día. Si hay 5 y 2 días, repartí 3 y 2. Si es solo 1 día, incluí al menos 4 actividades.
+      Actividades cercanas:
+      ${nombresParaPrompt.join('\n')}
 
-Usá solo el encabezado “Día X:” para cada día. No agregues subtítulos como “actividades”, “plan”, “itinerario”, etc.
+      Distribuí todas las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}, de forma equitativa. No sobrecargues ni vacíes ningún día. Si hay 6 actividades y 3 días, repartí 2 por día. Si hay 5 y 2 días, repartí 3 y 2. Si es solo 1 día, incluí entre 4 y 5 actividades como máximo.
 
-Formato:
+      Usá únicamente el encabezado “cDía X:” una sola vez por día. No lo repitas dentro del contenido. No agregues subtítulos como “actividades del día”, “plan del día”, ni similares.
 
-${formatoDias}
+      Formato:
 
-${cierre}
+      ${formatoDias}
 
-Reglas:
-- No repitas actividades en distintos días.
-- No incluyas actividades fuera de los ${data.dias} día${data.dias > 1 ? 's' : ''}.
-- No hagas introducciones ni resúmenes.
-- No uses gentilicios ni nombres de países o zonas. Ej: no digas “chileno”, “mexicano”, “argentino”.
-- Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
-- Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario.
-`.trim();
+      ${cierre}
+
+      Reglas:
+      - No repitas actividades en distintos días.
+      - No incluyas actividades fuera de los ${data.dias} día${data.dias > 1 ? 's' : ''}.
+      - No hagas introducciones, resúmenes ni cierres.
+      - No uses gentilicios ni nombres de países o zonas. Ej: no digas “chileno”, “mexicano”, “argentino”.
+      - Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
+      - Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario.
+      - No incluyas frases genéricas como “llevar agua”, “protegerse del sol”, “disfrutar del día”.
+      `.trim();
+
 
       const start = Date.now();
 
@@ -87,9 +95,9 @@ Reglas:
         prompt,
         stream: false,
         options: {
-          temperature: 0.7,
-          top_p: 0.9,
-          max_tokens: 260
+          temperature: 0.6,
+          top_p: 0.8,
+          max_tokens: 230
         }
       });
 

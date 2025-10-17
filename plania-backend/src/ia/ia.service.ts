@@ -36,22 +36,22 @@ export class IaService {
 
     try {
       const clima = await this.obtenerClima(data.lat, data.lng);
-console.log('Clima:', clima);
+      console.log('Clima:', clima);
 
-const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
-console.log('Lugares seleccionados:', lugares);
+      const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
+      console.log('Lugares seleccionados:', lugares);
 
-const nombresParaPrompt = lugares.map((l, i) => `${i + 1}. ${l.nombre} (${l.categoria})`);
+      const nombresParaPrompt = lugares.map((l, i) => `${i + 1}. ${l.nombre} (${l.categoria})`);
 
-const formatoDias = Array.from({ length: data.dias }, (_, i) => {
-  return `Día ${i + 1}:\n1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español]`;
-}).join('\n\n');
+      const formatoDias = Array.from({ length: data.dias }, (_, i) => {
+        return `📅 Día ${i + 1}:\n1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español]`;
+      }).join('\n\n');
 
-const cierre = `
+      const cierre = `
 No escribas ningún otro bloque. No escribas “Día ${data.dias + 1}” ni actividades adicionales. Finalizá el texto después del último punto del Día ${data.dias}.
 `.trim();
 
-const prompt = `
+      const prompt = `
 Ubicación: ${data.lat}, ${data.lng}, clima: ${clima.descripcion}, ${clima.temperatura}°C.
 Intereses: ${data.intereses.join(', ')}.
 Presupuesto: $${data.presupuesto} USD.
@@ -61,22 +61,23 @@ Duración: ${data.dias} día${data.dias > 1 ? 's' : ''}.
 Actividades cercanas:
 ${nombresParaPrompt.join('\n')}
 
-Distribuí exactamente las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}. Repartí las actividades de forma equitativa entre los días. No pongas muchas en un solo día y pocas en otro. Balanceá la cantidad. Ejemplo: si hay 6 actividades y 3 días, repartí 2 por día. Si hay 5 actividades y 2 días, repartí 3 y 2. Si se solicita solo 1 día, incluí al menos 4 actividades para aprovecharlo al máximo.
+Distribuí todas las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}, de forma equitativa. No sobrecargues ni vacíes ningún día. Si hay 6 actividades y 3 días, repartí 2 por día. Si hay 5 y 2 días, repartí 3 y 2. Si es solo 1 día, incluí al menos 4 actividades.
 
-Usá únicamente el encabezado “Día X:” para cada día. No agregues palabras como “actividades”, “recomendadas”, “plan”, “itinerario” ni ningún subtítulo adicional.
+Usá solo el encabezado “Día X:” para cada día. No agregues subtítulos como “actividades”, “plan”, “itinerario”, etc.
 
-Usá este formato:
+Formato:
 
 ${formatoDias}
 
 ${cierre}
 
+Reglas:
 - No repitas actividades en distintos días.
-- No incluyas actividades fuera de los ${data.dias} día${data.dias > 1 ? 's' : ''} solicitados.
-- No hagas introducciones ni resúmenes antes de los días.
-- No uses gentilicios ni referencias geográficas en las descripciones. No digas “chileno”, “mexicano”, “argentino”, ni nombres de países o zonas. Solo describí la actividad en sí.
+- No incluyas actividades fuera de los ${data.dias} día${data.dias > 1 ? 's' : ''}.
+- No hagas introducciones ni resúmenes.
+- No uses gentilicios ni nombres de países o zonas. Ej: no digas “chileno”, “mexicano”, “argentino”.
 - Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
-- Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario. Usá siempre "gratis" en la descripción.
+- Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario.
 `.trim();
 
       const start = Date.now();

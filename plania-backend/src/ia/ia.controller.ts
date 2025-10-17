@@ -5,7 +5,9 @@ export class RecomendacionDTO {
   lat: string;
   lng: string;
   intereses: string[];
-  presupuesto: number; // ✅ obligatorio
+  presupuesto: number; 
+  personas: number;    
+  dias: number;        
 }
 
 @Controller('ia')
@@ -14,7 +16,6 @@ export class IaController {
 
   @Post('recomendar')
   async recomendar(@Body() body: RecomendacionDTO) {
-    // ✅ devolvemos directamente el objeto plano
     return await this.iaService.generarRecomendaciones(body);
   }
 

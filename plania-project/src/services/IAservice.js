@@ -1,4 +1,4 @@
-export async function generarRecomendaciones({ lat, lng, intereses, presupuesto }) {
+export async function generarRecomendaciones({ lat, lng, intereses, presupuesto, personas, dias }) {
   const res = await fetch('http://localhost:3000/ia/recomendar', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -6,10 +6,12 @@ export async function generarRecomendaciones({ lat, lng, intereses, presupuesto 
       lat,
       lng,
       intereses,
-      presupuesto: Number(presupuesto) // ✅ sin $
+      presupuesto: Number(presupuesto),
+      personas: Number(personas),
+      dias: Number(dias)
     })
   });
 
   const data = await res.json();
-  return data; // ✅ incluye respuesta + lugares
+  return data;
 }

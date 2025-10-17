@@ -14,16 +14,24 @@ export class IaService {
     lng: string;
     intereses: string[];
     presupuesto: number;
+    personas: number;
+    dias: number;
   }): Promise<{ respuesta: string; lugares: LugarSeleccionado[] }> {
-    if (typeof data.presupuesto !== 'number' || isNaN(data.presupuesto)) {
-      throw new Error('Presupuesto inválido: debe ser un número');
+    if (
+      typeof data.presupuesto !== 'number' || isNaN(data.presupuesto) ||
+      typeof data.personas !== 'number' || data.personas < 1 || data.personas > 4 ||
+      typeof data.dias !== 'number' || data.dias < 1 || data.dias > 3
+    ) {
+      throw new Error('Datos inválidos: revisá presupuesto, personas (1–4) y días (1–3)');
     }
 
     console.log('Recibido:', {
       lat: data.lat,
       lng: data.lng,
       intereses: data.intereses,
-      presupuesto: data.presupuesto
+      presupuesto: data.presupuesto,
+      personas: data.personas,
+      dias: data.dias
     });
 
     try {
@@ -39,12 +47,15 @@ export class IaService {
 Ubicación: ${data.lat}, ${data.lng}, clima: ${clima.descripcion}, ${clima.temperatura}°C.
 Intereses: ${data.intereses.join(', ')}.
 Presupuesto: $${data.presupuesto} USD.
+Grupo: ${data.personas} persona${data.personas > 1 ? 's' : ''}.
+Duración: ${data.dias} día${data.dias > 1 ? 's' : ''}.
 
 Actividades cercanas:
 ${nombresParaPrompt.join('\n')}
 
-Generá una lista numerada con este formato:
-1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español que describa la actividad, sin usar "Descripción:, ni asociar la descripciones a paises, por ejemplo en la descripcion del museo nacional del vino me colocas Chile, eso no lo quiero"]
+Distribuí las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}, teniendo en cuenta que son ${data.personas} persona${data.personas > 1 ? 's' : ''}.
+Usá este formato:
+1. Nombre (categoría) - Costo estimado: $X USD - [Una frase breve en español que describa la actividad, sin usar "Descripción:", ni asociar las descripciones a países]
 
 - Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
 - Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario. No uses las palabras "gratuito", "gratuita" ni "gratuidad". Usá siempre "gratis" en la descripción.

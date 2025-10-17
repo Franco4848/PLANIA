@@ -12,12 +12,18 @@ export default function IAChat({
 }) {
   const [loading, setLoading] = useState(false);
   const [presupuesto, setPresupuesto] = useState(0);
+  const [cantidadPersonas, setCantidadPersonas] = useState(1);
+  const [cantidadDias, setCantidadDias] = useState(1);
 
   const consultarIA = () => {
     if (!userPosition || interesesUsuario.length === 0) return;
 
-    if (presupuesto <= 0) {
-      alert('Ingresá un presupuesto mayor a 0 para generar recomendaciones.');
+    if (
+      presupuesto <= 0 ||
+      cantidadPersonas < 1 || cantidadPersonas > 4 ||
+      cantidadDias < 1 || cantidadDias > 3
+    ) {
+      alert('Completá todos los campos obligatorios con valores válidos (máximo 4 personas, máximo 3 días).');
       return;
     }
 
@@ -26,7 +32,9 @@ export default function IAChat({
       lat: userPosition.lat.toString(),
       lng: userPosition.lng.toString(),
       intereses: interesesUsuario,
-      presupuesto: Number(presupuesto)
+      presupuesto: Number(presupuesto),
+      personas: cantidadPersonas,
+      dias: cantidadDias
     })
       .then((data) => {
         if (!data || !data.respuesta || !Array.isArray(data.lugares)) {
@@ -35,7 +43,6 @@ export default function IAChat({
         }
 
         console.log('🧠 Texto IA recibido:', data.respuesta);
-
         setJustificacionIA(data.respuesta);
 
         const agrupadas = new Map();
@@ -96,7 +103,7 @@ export default function IAChat({
     <div>
       <h2>🤖 Asistente Inteligente</h2>
 
-      {/* 💵 Presupuesto obligatorio */}
+      {/* 💵 Presupuesto disponible */}
       <div style={{ marginBottom: '20px' }}>
         <label>
           💵 Presupuesto disponible (USD) <span style={{ fontSize: '12px', color: '#c00' }}>(obligatorio)</span>
@@ -112,9 +119,41 @@ export default function IAChat({
         <div style={{ marginTop: '8px', fontSize: '14px' }}>
           Seleccionado: <strong>{presupuesto > 0 ? `$${presupuesto}` : 'No definido'}</strong>
         </div>
-        <div style={{ fontSize: '12px', color: '#777', marginTop: '4px' }}>
-          Este campo es obligatorio para generar actividades.
-        </div>
+      </div>
+
+      {/* 🧑‍🤝‍🧑 Cantidad de personas */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          🧑‍🤝‍🧑 Cantidad de personas <span style={{ fontSize: '12px', color: '#c00' }}>(obligatorio) (máximo 4)</span>
+        </label>
+        <input
+          type="number"
+          min="1"
+          max="4"
+          value={cantidadPersonas}
+          onChange={(e) => setCantidadPersonas(parseInt(e.target.value))}
+          style={{ width: '60px', marginLeft: '10px' }}
+        />
+      </div>
+
+      {/* 📅 Cantidad de días */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          📅 Cantidad de días <span style={{ fontSize: '12px', color: '#c00' }}>(obligatorio) (máximo 3)</span>
+        </label>
+        <input
+          type="number"
+          min="1"
+          max="3"
+          value={cantidadDias}
+          onChange={(e) => setCantidadDias(parseInt(e.target.value))}
+          style={{ width: '60px', marginLeft: '10px' }}
+        />
+      </div>
+
+      {/* 📝 Mensaje unificado */}
+      <div style={{ fontSize: '12px', color: '#777', marginTop: '4px' }}>
+        Campos obligatorios para generar el itinerario.
       </div>
 
       {/* 🧠 Justificación IA */}

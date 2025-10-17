@@ -88,7 +88,7 @@ function App() {
         <div className="overlay-content">
           <IAChat
             userPosition={userPosition}
-            interesesUsuario={['cine', 'parque', 'museo']}
+            interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
             onActividadesGeneradas={recibirActividadesIA}
             onSugerenciasGeneradas={recibirSugerenciasIA}
             justificacionIA={justificacionIA}
@@ -105,7 +105,7 @@ function App() {
             setActividades={setActividadesIA}
             onRutaGenerada={setRutaDatos}
             userPosition={userPosition}
-            interesesUsuario={['cine', 'parque', 'museo']}
+            interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
             justificacionIA={justificacionIA}
             setJustificacionIA={setJustificacionIA}
             agregarActividadExtra={agregarActividadExtra}

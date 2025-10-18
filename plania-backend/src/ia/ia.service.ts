@@ -40,8 +40,8 @@ export class IaService {
 
       const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
 
-      const maxActividades = data.dias === 1 ? 5 : data.dias === 2 ? 6 : 8;
-
+      // ✅ Aseguramos margen suficiente para 3–5 actividades por día
+      const maxActividades = data.dias * 5;
       const lugaresLimitados = lugares.slice(0, maxActividades);
       console.log('Lugares seleccionados:', lugaresLimitados);
 
@@ -64,15 +64,12 @@ export class IaService {
       Grupo: ${data.personas} persona${data.personas > 1 ? 's' : ''}.
       Duración: ${data.dias} día${data.dias > 1 ? 's' : ''}.
 
-      Actividades cercanas:
+      Actividades disponibles:
       ${nombresParaPrompt.join('\n')}
 
-      Distribuí todas las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}, de forma equitativa. No sobrecargues ni vacíes ningún día. Si hay 6 actividades y 3 días, repartí 2 por día. Si hay 5 y 2 días, repartí 3 y 2. Si es solo 1 día, incluí entre 4 y 5 actividades como máximo.
-
-      Usá únicamente el encabezado “cDía X:” una sola vez por día. No lo repitas dentro del contenido. No agregues subtítulos como “actividades del día”, “plan del día”, ni similares.
+      Distribuí todas las actividades en ${data.dias} día${data.dias > 1 ? 's' : ''}, asegurando que cada día tenga entre 3 y 5 actividades. Este requisito es obligatorio. No dejes ningún día con menos de 3 actividades ni más de 5. Si hay 9 actividades y 3 días, repartí 3, 3 y 3. Si hay 10, repartí 4, 3 y 3 o 3, 4, 3. Si hay 5 y 2 días, repartí 3 y 2.
 
       Formato:
-
       ${formatoDias}
 
       ${cierre}
@@ -85,6 +82,7 @@ export class IaService {
       - Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
       - Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario.
       - No incluyas frases genéricas como “llevar agua”, “protegerse del sol”, “disfrutar del día”.
+      - No incluyas análisis, justificaciones ni frases como “la elección está justificada”, “cumple con los criterios”, “la información es precisa”.
       `.trim();
 
 

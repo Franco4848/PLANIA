@@ -7,12 +7,16 @@ export default function IAChat({
   onActividadesGeneradas,
   onSugerenciasGeneradas,
   justificacionIA,
-  setJustificacionIA
+  setJustificacionIA,
+  actividadesVisiblesIA,
+  presupuesto,
+  setPresupuesto,
+  cantidadPersonas,
+  setCantidadPersonas,
+  cantidadDias,
+  setCantidadDias
 }) {
   const [loading, setLoading] = useState(false);
-  const [presupuesto, setPresupuesto] = useState(10);
-  const [cantidadPersonas, setCantidadPersonas] = useState(1);
-  const [cantidadDias, setCantidadDias] = useState(1);
 
   const consultarIA = () => {
     if (!userPosition || interesesUsuario.length === 0) return;

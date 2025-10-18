@@ -14,10 +14,15 @@ function App() {
   const [userPosition, setUserPosition] = useState(null);
   const [rutaDatos, setRutaDatos] = useState(null);
   const [actividadesIA, setActividadesIA] = useState([]);
-  const [actividadesVisiblesIA, setActividadesVisiblesIA] = useState([]); // ✅ persistencia visual
+  const [actividadesVisiblesIA, setActividadesVisiblesIA] = useState([]);
   const [sugerenciasIA, setSugerenciasIA] = useState([]);
   const [justificacionIA, setJustificacionIA] = useState('');
   const [mapKey, setMapKey] = useState(0);
+
+  // Parámetros persistentes para seccion IA
+  const [presupuesto, setPresupuesto] = useState(10);
+  const [cantidadPersonas, setCantidadPersonas] = useState(1);
+  const [cantidadDias, setCantidadDias] = useState(1);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -37,8 +42,8 @@ function App() {
   }, [activeTab]);
 
   const recibirActividadesIA = (lista) => {
-    setActividadesIA(lista);              // para itinerario
-    setActividadesVisiblesIA(lista);      // para IA visual
+    setActividadesIA(lista);
+    setActividadesVisiblesIA(lista);
   };
 
   const recibirSugerenciasIA = (lista) => {
@@ -47,7 +52,6 @@ function App() {
 
   const agregarActividadExtra = () => {
     if (sugerenciasIA.length === 0) return;
-
     const siguiente = sugerenciasIA[0];
     setActividadesIA((prev) => [...prev, siguiente]);
     setSugerenciasIA((prev) => prev.slice(1));
@@ -92,8 +96,14 @@ function App() {
             onActividadesGeneradas={recibirActividadesIA}
             onSugerenciasGeneradas={recibirSugerenciasIA}
             justificacionIA={justificacionIA}
-            setJustificacionIA={setJustificacionIA} 
+            setJustificacionIA={setJustificacionIA}
             actividadesVisiblesIA={actividadesVisiblesIA}
+            presupuesto={presupuesto}
+            setPresupuesto={setPresupuesto}
+            cantidadPersonas={cantidadPersonas}
+            setCantidadPersonas={setCantidadPersonas}
+            cantidadDias={cantidadDias}
+            setCantidadDias={setCantidadDias}
           />
         </div>
       )}
@@ -111,6 +121,7 @@ function App() {
             agregarActividadExtra={agregarActividadExtra}
             sugerenciasIA={sugerenciasIA}
             setSugerenciasIA={setSugerenciasIA}
+            cantidadDias={cantidadDias}
           />
         </div>
       )}

@@ -6,6 +6,7 @@ import Clima from './components/Clima';
 import IAChat from './components/IAChat';
 import ItinerarioInteligente from './components/ItinerarioInteligente';
 import Sugerencias from './components/Sugerencias';
+import PerfilUsuario from './components/PerfilUsuario';
 import './App.css';
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
   const [justificacionIA, setJustificacionIA] = useState('');
   const [mapKey, setMapKey] = useState(0);
 
-  // Parámetros persistentes para seccion IA
+  // Parámetros persistentes para sección IA
   const [presupuesto, setPresupuesto] = useState(10);
   const [cantidadPersonas, setCantidadPersonas] = useState(1);
   const [cantidadDias, setCantidadDias] = useState(1);
@@ -66,7 +67,8 @@ function App() {
         activeTab === 'itinerario' ||
         activeTab === 'nube' ||
         activeTab === 'ia' ||
-        activeTab === 'sugerencias') && (
+        activeTab === 'sugerencias' ||
+        activeTab === 'perfil') && (
         <Mapa
           key={mapKey}
           filtroTipo={filtroTipo}
@@ -129,6 +131,12 @@ function App() {
       {activeTab === 'sugerencias' && (
         <div className="overlay-content">
           <Sugerencias />
+        </div>
+      )}
+
+      {activeTab === 'perfil' && (
+        <div className="overlay-content">
+          <PerfilUsuario />
         </div>
       )}
     </div>

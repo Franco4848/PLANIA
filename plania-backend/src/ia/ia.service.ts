@@ -78,7 +78,7 @@ export class IaService {
       - No repitas actividades en distintos días.
       - No incluyas actividades fuera de los ${data.dias} día${data.dias > 1 ? 's' : ''}.
       - No hagas introducciones, resúmenes ni cierres.
-      - No uses gentilicios ni nombres de países o zonas. Ej: no digas “chileno”, “mexicano”, “argentino”.
+      - No uses gentilicios ni nombres de países o zonas en las descripciones de las actividades. Ej: no digas “chileno”, “mexicano”, “argentino”.
       - Siempre indicá un costo estimado en dólares, incluso si es $0 USD.
       - Si la categoría es "parque", asumí que es gratis salvo que se indique lo contrario.
       - No incluyas frases genéricas como “llevar agua”, “protegerse del sol”, “disfrutar del día”.

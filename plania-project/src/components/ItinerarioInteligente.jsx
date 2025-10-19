@@ -45,15 +45,17 @@ export default function ItinerarioInteligente({
     <div>
       <h2>📋 Itinerario</h2>
 
-      {actividades.length === 0 ? (
-        <p>⚠️ No hay actividades en el itinerario.</p>
-      ) : (
-        <>
+      {/* Actividades recomendadas */}
+      <div style={{ marginTop: '20px' }}>
+        <h3>🧠 Actividades recomendadas por la IA</h3>
+        {actividades.length === 0 ? (
+          <p>⚠️ No hay actividades en el itinerario.</p>
+        ) : (
           <ul>
             {actividades.map((act, index) => {
               const costo = extraerCosto(act.nombre, justificacionIA);
               return (
-                <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <span>
                     <strong>{act.nombre}</strong> ({act.categoria}) {costo && <span>– <strong>{costo}</strong></span>}
                   </span>
@@ -62,18 +64,40 @@ export default function ItinerarioInteligente({
               );
             })}
           </ul>
+        )}
+      </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-            <button onClick={agregarActividadExtra} disabled={sugerenciasIA.length === 0}>
-              Agregar actividad
-            </button>
-            <button onClick={mostrarRutaEnMapa}>Mostrar ruta</button>
-          </div>
+      {/* Actividades sugeridas */}
+      <div style={{ marginTop: '30px' }}>
+        <h3>➕ Otras actividades cercanas a ti</h3>
+        {actividades.length === 0 ? (
+          <p>⚠️ No hay actividades en el itinerario.</p>
+        ) : (
+          <>
+            {sugerenciasIA.length === 0 ? (
+              <p>✅ Ya se agregaron todas las actividades sugeridas.</p>
+            ) : (
+              <ul>
+                {sugerenciasIA.map((act, i) => (
+                  <li key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span>
+                      <strong>{act.nombre}</strong> ({act.categoria}) – <strong>${act.costo} USD</strong>
+                    </span>
+                    <button onClick={agregarActividadExtra}>Agregar actividad</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
 
-          {sugerenciasIA.length === 0 && (
-            <p style={{ marginTop: '10px' }}>✅ Ya se agregaron todas las actividades sugeridas.</p>
-          )}
-        </>
+      {/* Botones de acción */}
+      {actividades.length > 0 && (
+        <div style={{ marginTop: '30px', display: 'flex', gap: '12px' }}>
+          <button onClick={mostrarRutaEnMapa}>Mostrar ruta</button>
+          <button onClick={() => alert('Función de guardado pendiente')}>Guardar ruta</button>
+        </div>
       )}
     </div>
   );

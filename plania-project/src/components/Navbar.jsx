@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 import {
   FaMapMarkedAlt,
@@ -10,78 +11,34 @@ import {
   FaCommentDots
 } from 'react-icons/fa';
 
-const Navbar = ({ activeTab, setActiveTab }) => {
+const Navbar = () => {
+  const navItems = [
+    { to: '/mapa', icon: <FaMapMarkedAlt size={22} />, label: 'Mapa Interactivo' },
+    { to: '/ia', icon: <FaRobot size={22} />, label: 'IA' },
+    { to: '/itinerario', icon: <FaListAlt size={22} />, label: 'Itinerario' },
+    { to: '/filtro', icon: <FaMapMarkerAlt size={22} />, label: 'Actividades cercanas' },
+    { to: '/nube', icon: <FaCloud size={22} />, label: 'Clima' },
+    { to: '/perfil', icon: <FaUser size={22} />, label: 'Mi Perfil' },
+    { to: '/sugerencias', icon: <FaCommentDots size={22} />, label: 'Sugerencias' }
+  ];
+
   return (
     <nav className="navbar-container">
-      {/* Encabezado o Logo de la App */}
       <div className="navbar-header">
-        <img src='./public/plania.png' className="logo" alt='logo de PlanIA' />
+        <img src="/plania.png" className="logo" alt="logo de PlanIA" />
       </div>
 
-      {/* Cuerpo de la navegación */}
       <div className="navbar-body">
-        {/* 1. Mapa */}
-        <div
-          className={`nav-item ${activeTab === 'mapa' ? 'active' : ''}`}
-          onClick={() => setActiveTab('mapa')}
-        >
-          <FaMapMarkedAlt size={22} />
-          <span className="nav-text">Mapa Interactivo</span>
-        </div>
-
-        {/* 2. IA */}
-        <div
-          className={`nav-item ${activeTab === 'ia' ? 'active' : ''}`}
-          onClick={() => setActiveTab('ia')}
-        >
-          <FaRobot size={22} />
-          <span className="nav-text">IA</span>
-        </div>
-
-        {/* 3. Itinerario */}
-        <div
-          className={`nav-item ${activeTab === 'itinerario' ? 'active' : ''}`}
-          onClick={() => setActiveTab('itinerario')}
-        >
-          <FaListAlt size={22} />
-          <span className="nav-text">Itinerario</span>
-        </div>
-
-        {/* 4. Actividades cercanas */}
-        <div
-          className={`nav-item ${activeTab === 'filtro' ? 'active' : ''}`}
-          onClick={() => setActiveTab('filtro')}
-        >
-          <FaMapMarkerAlt size={22} />
-          <span className="nav-text">Actividades cercanas</span>
-        </div>
-
-        {/* 5. Clima */}
-        <div
-          className={`nav-item ${activeTab === 'nube' ? 'active' : ''}`}
-          onClick={() => setActiveTab('nube')}
-        >
-          <FaCloud size={22} />
-          <span className="nav-text">Clima</span>
-        </div>
-
-        {/* 6. Perfil */}
-        <div
-          className={`nav-item ${activeTab === 'perfil' ? 'active' : ''}`}
-          onClick={() => setActiveTab('perfil')}
-        >
-          <FaUser size={22} />
-          <span className="nav-text">Mi Perfíl</span>
-        </div>
-
-        {/* 7. Sugerencias */}
-        <div
-          className={`nav-item ${activeTab === 'sugerencias' ? 'active' : ''}`}
-          onClick={() => setActiveTab('sugerencias')}
-        >
-          <FaCommentDots size={22} />
-          <span className="nav-text">Sugerencias</span>
-        </div>
+        {navItems.map(({ to, icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+          >
+            {icon}
+            <span className="nav-text">{label}</span>
+          </NavLink>
+        ))}
       </div>
     </nav>
   );

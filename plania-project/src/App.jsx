@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Mapa from './components/Mapa';
 import Navbar from './components/Navbar';
 import Filtro from './components/Filtro';
@@ -10,7 +11,6 @@ import PerfilUsuario from './components/PerfilUsuario';
 import './App.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('mapa');
   const [filtroTipo, setFiltroTipo] = useState('todas');
   const [userPosition, setUserPosition] = useState(null);
   const [rutaDatos, setRutaDatos] = useState(null);
@@ -35,13 +35,6 @@ function App() {
     );
   }, []);
 
-  useEffect(() => {
-    if (activeTab !== 'itinerario') {
-      setRutaDatos(null);
-      setMapKey((prev) => prev + 1);
-    }
-  }, [activeTab]);
-
   const recibirActividadesIA = (lista) => {
     setActividadesIA(lista);
     setActividadesVisiblesIA(lista);
@@ -59,87 +52,166 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <Router>
+      <div className="app-container">
+        <Navbar />
 
-      {(activeTab === 'mapa' ||
-        activeTab === 'filtro' ||
-        activeTab === 'itinerario' ||
-        activeTab === 'nube' ||
-        activeTab === 'ia' ||
-        activeTab === 'sugerencias' ||
-        activeTab === 'perfil') && (
-        <Mapa
-          key={mapKey}
-          filtroTipo={filtroTipo}
-          activeTab={activeTab}
-          userPosition={userPosition}
-          rutaDatos={rutaDatos}
-        />
-      )}
-
-      {activeTab === 'filtro' && (
-        <div className="overlay-content">
-          <Filtro filtroTipo={filtroTipo} setFiltroTipo={setFiltroTipo} />
-        </div>
-      )}
-
-      {activeTab === 'nube' && (
-        <div className="overlay-content">
-          <Clima userPosition={userPosition} />
-        </div>
-      )}
-
-      {activeTab === 'ia' && (
-        <div className="overlay-content">
-          <IAChat
-            userPosition={userPosition}
-            interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
-            onActividadesGeneradas={recibirActividadesIA}
-            onSugerenciasGeneradas={recibirSugerenciasIA}
-            justificacionIA={justificacionIA}
-            setJustificacionIA={setJustificacionIA}
-            actividadesVisiblesIA={actividadesVisiblesIA}
-            presupuesto={presupuesto}
-            setPresupuesto={setPresupuesto}
-            cantidadPersonas={cantidadPersonas}
-            setCantidadPersonas={setCantidadPersonas}
-            cantidadDias={cantidadDias}
-            setCantidadDias={setCantidadDias}
+        <Routes>
+          <Route
+            path="/mapa"
+            element={
+              <Mapa
+                key={mapKey}
+                filtroTipo={filtroTipo}
+                activeTab="mapa"
+                userPosition={userPosition}
+                rutaDatos={rutaDatos}
+              />
+            }
           />
-        </div>
-      )}
-
-      {activeTab === 'itinerario' && (
-        <div className="overlay-content">
-          <ItinerarioInteligente
-            actividades={actividadesIA}
-            setActividades={setActividadesIA}
-            onRutaGenerada={setRutaDatos}
-            userPosition={userPosition}
-            interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
-            justificacionIA={justificacionIA}
-            setJustificacionIA={setJustificacionIA}
-            agregarActividadExtra={agregarActividadExtra}
-            sugerenciasIA={sugerenciasIA}
-            setSugerenciasIA={setSugerenciasIA}
-            cantidadDias={cantidadDias}
+          <Route
+            path="/filtro"
+            element={
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="filtro"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <Filtro filtroTipo={filtroTipo} setFiltroTipo={setFiltroTipo} />
+                </div>
+              </>
+            }
           />
-        </div>
-      )}
-
-      {activeTab === 'sugerencias' && (
-        <div className="overlay-content">
-          <Sugerencias />
-        </div>
-      )}
-
-      {activeTab === 'perfil' && (
-        <div className="overlay-content">
-          <PerfilUsuario />
-        </div>
-      )}
-    </div>
+          <Route
+            path="/nube"
+            element={
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="nube"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <Clima userPosition={userPosition} />
+                </div>
+              </>
+            }
+          />
+          <Route
+            path="/ia"
+            element={
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="ia"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <IAChat
+                    userPosition={userPosition}
+                    interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
+                    onActividadesGeneradas={recibirActividadesIA}
+                    onSugerenciasGeneradas={recibirSugerenciasIA}
+                    justificacionIA={justificacionIA}
+                    setJustificacionIA={setJustificacionIA}
+                    actividadesVisiblesIA={actividadesVisiblesIA}
+                    presupuesto={presupuesto}
+                    setPresupuesto={setPresupuesto}
+                    cantidadPersonas={cantidadPersonas}
+                    setCantidadPersonas={setCantidadPersonas}
+                    cantidadDias={cantidadDias}
+                    setCantidadDias={setCantidadDias}
+                  />
+                </div>
+              </>
+            }
+          />
+          <Route
+            path="/itinerario"
+            element={
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="itinerario"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <ItinerarioInteligente
+                    actividades={actividadesIA}
+                    setActividades={setActividadesIA}
+                    onRutaGenerada={setRutaDatos}
+                    userPosition={userPosition}
+                    interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
+                    justificacionIA={justificacionIA}
+                    setJustificacionIA={setJustificacionIA}
+                    agregarActividadExtra={agregarActividadExtra}
+                    sugerenciasIA={sugerenciasIA}
+                    setSugerenciasIA={setSugerenciasIA}
+                    cantidadDias={cantidadDias}
+                  />
+                </div>
+              </>
+            }
+          />
+          <Route
+            path="/sugerencias"
+            element={
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="sugerencias"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <Sugerencias />
+                </div>
+              </>
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="perfil"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <PerfilUsuario />
+                </div>
+              </>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <Mapa
+                key={mapKey}
+                filtroTipo={filtroTipo}
+                activeTab="mapa"
+                userPosition={userPosition}
+                rutaDatos={rutaDatos}
+              />
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

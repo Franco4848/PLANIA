@@ -27,15 +27,15 @@ export class ActividadesService {
     const baseUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
 
     const tipoTraducido: Record<string, string> = {
-      'cafetería': 'cafe',
-      'restaurante': 'restaurant',
-      'museo': 'museum',
-      'parque': 'park',
-      'galería': 'art_gallery',
-      'cine': 'movie_theater',
-      'atracción': 'tourist_attraction',
-      'plaza': 'park',
-      'bodega': 'winery'
+      'cafeterias': 'cafe',
+      'restaurantes': 'restaurant',
+      'museos': 'museum',
+      'parques': 'park',
+      'galerías': 'art_gallery',
+      'cines': 'movie_theater',
+      'atracciones': 'tourist_attraction',
+      'plazas': 'park',
+      'bodegas': 'winery'
     };
 
     const tiposTuristicos = [

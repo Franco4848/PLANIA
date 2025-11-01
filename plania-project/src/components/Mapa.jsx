@@ -7,6 +7,7 @@ import {
   DirectionsRenderer
 } from '@react-google-maps/api';
 import { FaCrosshairs } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import './PrecisionButton.css';
 
 const containerStyle = {
@@ -26,6 +27,28 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
   const [loading, setLoading] = useState(false);
   const [rutaCalculada, setRutaCalculada] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+  const navigate = useNavigate();
+
+  // 🔐 Validar token y rol
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const role = payload.role;
+
+      if (role !== 'user' && role !== 'admin') {
+        navigate('/unauthorized');
+      }
+    } catch (err) {
+      console.error('Token inválido:', err);
+      navigate('/login');
+    }
+  }, []);
 
   // 🧭 Buscar lugares si estás en filtro
   useEffect(() => {
@@ -178,4 +201,3 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
 };
 
 export default Mapa;
-  

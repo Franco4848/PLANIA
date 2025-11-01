@@ -13,16 +13,26 @@ function Login() {
   const handleLogin = async () => {
     try {
       const res = await login({ email, password });
-      localStorage.setItem('token', res.access_token);
+      const { access_token } = res;
 
-      const payload = JSON.parse(atob(res.access_token.split('.')[1]));
-      const rol = payload.role;
-
-      if (rol === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/mapa');
+      if (!access_token) {
+        alert('No se recibió token. Verificá credenciales o conexión.');
+        return;
       }
+
+      localStorage.setItem('token', access_token);
+
+      // Decodificar el token (opcional si no usás el rol acá)
+      const base64 = access_token.split('.')[1];
+      const json = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(json);
+
+      navigate('/mapa');
     } catch (err) {
       console.error('Error al iniciar sesión:', err);
       alert('Credenciales inválidas o error de conexión');

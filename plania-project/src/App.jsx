@@ -17,6 +17,7 @@ import Sugerencias from './components/Sugerencias';
 import PerfilUsuario from './components/PerfilUsuario';
 import Login from './components/Login';
 import Register from './components/Register';
+import RutaPrivada from './components/RutaPrivada';
 
 import './App.css';
 
@@ -31,6 +32,7 @@ function AppContent() {
   const [sugerenciasIA, setSugerenciasIA] = useState([]);
   const [justificacionIA, setJustificacionIA] = useState('');
   const [mapKey, setMapKey] = useState(0);
+  const [interesesUsuario, setInteresesUsuario] = useState([]);
 
   const [presupuesto, setPresupuesto] = useState(10);
   const [cantidadPersonas, setCantidadPersonas] = useState(1);
@@ -44,6 +46,30 @@ function AppContent() {
       },
       () => setUserPosition({ lat: -32.89, lng: -68.82 })
     );
+
+    const decodePayload = (token) => {
+      try {
+        const base64 = token.split('.')[1];
+        const json = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        return JSON.parse(json);
+      } catch (err) {
+        console.error('Error al decodificar el token:', err);
+        return null;
+      }
+    };
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = decodePayload(token);
+      if (payload && Array.isArray(payload.interests)) {
+        setInteresesUsuario(payload.interests);
+      }
+    }
   }, []);
 
   const recibirActividadesIA = (lista) => {
@@ -67,162 +93,172 @@ function AppContent() {
       {location.pathname !== '/login' && location.pathname !== '/register' && <Navbar />}
 
       <Routes>
-        {/* Redirección desde raíz */}
         <Route path="/" element={<Navigate to="/login" />} />
-
-        {/* Autenticación */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Rutas principales */}
         <Route
           path="/mapa"
           element={
-            <Mapa
-              key={mapKey}
-              filtroTipo={filtroTipo}
-              activeTab="mapa"
-              userPosition={userPosition}
-              rutaDatos={rutaDatos}
-            />
+            <RutaPrivada>
+              <Mapa
+                key={mapKey}
+                filtroTipo={filtroTipo}
+                activeTab="mapa"
+                userPosition={userPosition}
+                rutaDatos={rutaDatos}
+              />
+            </RutaPrivada>
           }
         />
         <Route
           path="/filtro"
           element={
-            <>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="filtro"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-              <div className="overlay-content">
-                <Filtro filtroTipo={filtroTipo} setFiltroTipo={setFiltroTipo} />
-              </div>
-            </>
+            <RutaPrivada>
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="filtro"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <Filtro filtroTipo={filtroTipo} setFiltroTipo={setFiltroTipo} />
+                </div>
+              </>
+            </RutaPrivada>
           }
         />
         <Route
           path="/nube"
           element={
-            <>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="nube"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-              <div className="overlay-content">
-                <Clima userPosition={userPosition} />
-              </div>
-            </>
+            <RutaPrivada>
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="nube"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <Clima userPosition={userPosition} />
+                </div>
+              </>
+            </RutaPrivada>
           }
         />
         <Route
           path="/ia"
           element={
-            <>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="ia"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-              <div className="overlay-content">
-                <IAChat
-                  userPosition={userPosition}
-                  interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
-                  onActividadesGeneradas={recibirActividadesIA}
-                  onSugerenciasGeneradas={recibirSugerenciasIA}
-                  justificacionIA={justificacionIA}
-                  setJustificacionIA={setJustificacionIA}
-                  actividadesVisiblesIA={actividadesVisiblesIA}
-                  presupuesto={presupuesto}
-                  setPresupuesto={setPresupuesto}
-                  cantidadPersonas={cantidadPersonas}
-                  setCantidadPersonas={setCantidadPersonas}
-                  cantidadDias={cantidadDias}
-                  setCantidadDias={setCantidadDias}
-                />
-              </div>
-            </>
+            <RutaPrivada>
+              {interesesUsuario.length === 0 ? (
+                <div className="overlay-content">
+                  <p>Cargando intereses del usuario...</p>
+                </div>
+              ) : (
+                <>
+                  <Mapa
+                    key={mapKey}
+                    filtroTipo={filtroTipo}
+                    activeTab="ia"
+                    userPosition={userPosition}
+                    rutaDatos={rutaDatos}
+                  />
+                  <div className="overlay-content">
+                    <IAChat
+                      userPosition={userPosition}
+                      interesesUsuario={interesesUsuario}
+                      onActividadesGeneradas={recibirActividadesIA}
+                      onSugerenciasGeneradas={recibirSugerenciasIA}
+                      justificacionIA={justificacionIA}
+                      setJustificacionIA={setJustificacionIA}
+                      actividadesVisiblesIA={actividadesVisiblesIA}
+                      presupuesto={presupuesto}
+                      setPresupuesto={setPresupuesto}
+                      cantidadPersonas={cantidadPersonas}
+                      setCantidadPersonas={setCantidadPersonas}
+                      cantidadDias={cantidadDias}
+                      setCantidadDias={setCantidadDias}
+                    />
+                  </div>
+                </>
+              )}
+            </RutaPrivada>
           }
         />
         <Route
           path="/itinerario"
           element={
-            <>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="itinerario"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-              <div className="overlay-content">
-                <ItinerarioInteligente
-                  actividades={actividadesIA}
-                  setActividades={setActividadesIA}
-                  onRutaGenerada={setRutaDatos}
+            <RutaPrivada>
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="itinerario"
                   userPosition={userPosition}
-                  interesesUsuario={['cine', 'parque', 'museo', 'restaurante']}
-                  justificacionIA={justificacionIA}
-                  setJustificacionIA={setJustificacionIA}
-                  agregarActividadExtra={agregarActividadExtra}
-                  sugerenciasIA={sugerenciasIA}
-                  setSugerenciasIA={setSugerenciasIA}
-                  cantidadDias={cantidadDias}
+                  rutaDatos={rutaDatos}
                 />
-              </div>
-            </>
+                <div className="overlay-content">
+                  <ItinerarioInteligente
+                    actividades={actividadesIA}
+                    setActividades={setActividadesIA}
+                    onRutaGenerada={setRutaDatos}
+                    userPosition={userPosition}
+                    interesesUsuario={interesesUsuario}
+                    justificacionIA={justificacionIA}
+                    setJustificacionIA={setJustificacionIA}
+                    agregarActividadExtra={agregarActividadExtra}
+                    sugerenciasIA={sugerenciasIA}
+                    setSugerenciasIA={setSugerenciasIA}
+                    cantidadDias={cantidadDias}
+                  />
+                </div>
+              </>
+            </RutaPrivada>
           }
         />
         <Route
           path="/sugerencias"
           element={
-            <>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="sugerencias"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-              <div className="overlay-content">
-                <Sugerencias />
-              </div>
-            </>
+            <RutaPrivada>
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="sugerencias"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <Sugerencias />
+                </div>
+              </>
+            </RutaPrivada>
           }
         />
         <Route
           path="/perfil"
           element={
-            <>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="perfil"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-              <div className="overlay-content">
-                <PerfilUsuario />
-              </div>
-            </>
+            <RutaPrivada>
+              <>
+                <Mapa
+                  key={mapKey}
+                  filtroTipo={filtroTipo}
+                  activeTab="perfil"
+                  userPosition={userPosition}
+                  rutaDatos={rutaDatos}
+                />
+                <div className="overlay-content">
+                  <PerfilUsuario />
+                </div>
+              </>
+            </RutaPrivada>
           }
         />
 
-        {/* Fallback */}
-        <Route
-          path="*"
-          element={
-            <Navigate to="/login" />
-          }
-        />
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </div>
   );

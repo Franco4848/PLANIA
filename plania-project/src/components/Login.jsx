@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './login.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../services/AuthService';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -9,9 +10,23 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    console.log('Login:', email, password);
-    navigate('/mapa'); // ← redirección al mapa
+  const handleLogin = async () => {
+    try {
+      const res = await login({ email, password });
+      localStorage.setItem('token', res.access_token);
+
+      const payload = JSON.parse(atob(res.access_token.split('.')[1]));
+      const rol = payload.role;
+
+      if (rol === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/mapa');
+      }
+    } catch (err) {
+      console.error('Error al iniciar sesión:', err);
+      alert('Credenciales inválidas o error de conexión');
+    }
   };
 
   return (

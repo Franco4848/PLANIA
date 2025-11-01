@@ -17,7 +17,8 @@ export class UsersService {
       name: createUserDto.name,
       email: createUserDto.email,
       password: hashedPassword,
-      role: createUserDto.role ?? 'user', // si no se envía, usa 'user' por defecto
+      role: createUserDto.role ?? 'user',
+      interests: createUserDto.interests ?? [],
     });
 
     return user.save();

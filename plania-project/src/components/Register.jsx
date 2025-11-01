@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import './register.css';
 import { FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../services/AuthService';
 
 function Register() {
+  const [nombreDeUsuario, setNombreDeUsuario] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,8 +24,20 @@ function Register() {
     'Restaurantes'
   ];
 
-  const handleRegister = () => {
-    console.log('Registro:', { email, password, intereses });
+  const handleRegister = async () => {
+    try {
+      await register({
+        username: nombreDeUsuario,
+        email,
+        password,
+        intereses,
+      });
+      alert('Cuenta creada correctamente');
+      navigate('/login');
+    } catch (err) {
+      console.error('Error al registrar:', err);
+      alert('No se pudo crear la cuenta');
+    }
   };
 
   const toggleInteres = (interes) => {
@@ -46,6 +60,13 @@ function Register() {
         <h2>Crear cuenta</h2>
 
         <form className="register-form" onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="text"
+            placeholder="Nombre de usuario"
+            value={nombreDeUsuario}
+            onChange={(e) => setNombreDeUsuario(e.target.value)}
+          />
+
           <input
             type="email"
             placeholder="Correo electrónico"

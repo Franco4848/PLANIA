@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  obtenerRutasDelUsuario,
+  eliminarRuta
+} from '../services/rutaService';
 
 export default function PerfilUsuario() {
   const [usuario, setUsuario] = useState(null);
+  const [rutas, setRutas] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,11 +40,25 @@ export default function PerfilUsuario() {
     };
 
     setUsuario(datos);
+
+    obtenerRutasDelUsuario()
+      .then((res) => setRutas(res.data))
+      .catch((err) => console.error('Error al cargar rutas:', err));
   }, []);
 
   const cerrarSesion = () => {
     localStorage.removeItem('token');
     navigate('/login');
+  };
+
+  const handleEliminarRuta = async (id) => {
+    try {
+      await eliminarRuta(id);
+      setRutas((prev) => prev.filter((r) => r._id !== id));
+    } catch (err) {
+      console.error('Error al eliminar ruta:', err);
+      alert('No se pudo eliminar la ruta');
+    }
   };
 
   return (
@@ -60,8 +79,35 @@ export default function PerfilUsuario() {
         <p>No se pudo cargar la información del usuario.</p>
       )}
 
-      <h3 style={{ marginTop: '30px' }}>🗂️ Historial de rutas</h3>
-      {/* Aquí se mostrará el historial de itinerarios guardados */}
+      <h3 style={{ marginTop: '30px' }}>Historial de rutas</h3>
+
+      {rutas.length > 0 ? (
+        <ul style={{ marginTop: '10px' }}>
+          {rutas.map((ruta) => (
+            <li key={ruta._id} style={{ marginBottom: '12px', padding: '10px', border: '1px solid #ccc', borderRadius: '6px' }}>
+              <p><strong>Destino:</strong> {`Lat: ${ruta.destino.lat}, Lng: ${ruta.destino.lng}`}</p>
+              <p><strong>Paradas:</strong> {ruta.waypoints.length}</p>
+              <p><strong>Fecha:</strong> {new Date(ruta.fecha).toLocaleString()}</p>
+              <button
+                onClick={() => handleEliminarRuta(ruta._id)}
+                style={{
+                  marginTop: '8px',
+                  padding: '6px 12px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+              Eliminar ruta
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No tenés rutas guardadas aún.</p>
+      )}
 
       <button
         onClick={cerrarSesion}

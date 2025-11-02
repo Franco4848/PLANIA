@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { ActividadesModule } from './actividades/actividades.module';
 import { IaModule } from './ia/ia.module';
 import { SugerenciaModule } from './sugerencias/sugerencia.module';
+import { RutasModule } from './rutas/rutas.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SugerenciaModule } from './sugerencias/sugerencia.module';
     ActividadesModule,
     IaModule,
     SugerenciaModule,
+    RutasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

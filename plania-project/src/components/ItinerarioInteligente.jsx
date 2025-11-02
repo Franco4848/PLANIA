@@ -1,4 +1,5 @@
 import React from 'react';
+import { guardarRuta } from '../services/rutaService';
 
 export default function ItinerarioInteligente({
   actividades,
@@ -28,6 +29,24 @@ export default function ItinerarioInteligente({
     }));
 
     onRutaGenerada({ destino, waypoints });
+  };
+
+  const guardarRutaEnBD = async () => {
+    if (actividades.length === 0) return;
+
+    const destino = actividades[actividades.length - 1].coordenadas;
+    const waypoints = actividades.slice(0, -1).map((act) => ({
+      location: act.coordenadas,
+      stopover: true
+    }));
+
+    try {
+      await guardarRuta({ destino, waypoints });
+      alert('Ruta guardada correctamente');
+    } catch (err) {
+      console.error('Error al guardar ruta:', err);
+      alert('No se pudo guardar la ruta');
+    }
   };
 
   const extraerCosto = (nombre, texto) => {
@@ -96,7 +115,7 @@ export default function ItinerarioInteligente({
       {actividades.length > 0 && (
         <div style={{ marginTop: '30px', display: 'flex', gap: '12px' }}>
           <button onClick={mostrarRutaEnMapa}>Mostrar ruta</button>
-          <button onClick={() => alert('Función de guardado pendiente')}>Guardar ruta</button>
+          <button onClick={guardarRutaEnBD}>Guardar ruta</button>
         </div>
       )}
     </div>

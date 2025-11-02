@@ -8,7 +8,6 @@ const SugerenciasAdmin = () => {
   return (
     <div className="admin-panel">
       <h2>Gestión de Sugerencias</h2>
-      <p>Acá vas poder obsevar sugerencias o problemas reportados por los usuarios.</p>
 
       {loading && <p>Cargando sugerencias...</p>}
       {error && <p className="error">Error al cargar sugerencias.</p>}

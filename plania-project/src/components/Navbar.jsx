@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 import {
@@ -10,10 +10,13 @@ import {
   FaRobot,
   FaCommentDots,
   FaUsers,
-  FaClipboardCheck
+  FaClipboardCheck,
+  FaChevronLeft,
+  FaChevronRight
 } from 'react-icons/fa';
 
 const Navbar = () => {
+  const [colapsado, setColapsado] = useState(false);
   const token = localStorage.getItem('token');
   let rolUsuario = null;
 
@@ -47,8 +50,8 @@ const Navbar = () => {
   ];
 
   const adminItems = [
-    { to: '/usuarios', icon: <FaUsers size={22} />, label: 'Usuarios' },
-    { to: '/sugerencias-admin', icon: <FaClipboardCheck size={22} />, label: 'Sugerencias Admin' }
+    { to: '/usuarios', icon: <FaUsers size={22} />, label: 'Gestión de usuarios' },
+    { to: '/sugerencias-admin', icon: <FaClipboardCheck size={22} />, label: 'Gestión de sugerencias' }
   ];
 
   const visibleItems = [
@@ -57,24 +60,38 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="navbar-container">
-      <div className="navbar-header">
-        <img src="/plania.png" className="logo" alt="logo de PlanIA" />
-      </div>
+    <>
+      <nav className={`navbar-container ${colapsado ? 'colapsado' : ''}`}>
+        <div className="navbar-header">
+          <img
+            src={colapsado ? '/PLANIA-ISOLOGOTIPO.png' : '/PLANIA-LOGOTIPO.png'}
+            className="logo"
+            alt="logo de PlanIA"
+          />
+        </div>
 
-      <div className="navbar-body">
-        {visibleItems.map(({ to, icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-          >
-            {icon}
-            <span className="nav-text">{label}</span>
-          </NavLink>
-        ))}
-      </div>
-    </nav>
+        <div className="navbar-body">
+          {visibleItems.map(({ to, icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+              {icon}
+              {!colapsado && <span className="nav-text">{label}</span>}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+
+      {/* Botón flotante externo */}
+      <button
+        className="collapse-btn-floating"
+        onClick={() => setColapsado(!colapsado)}
+      >
+        {colapsado ? <FaChevronRight size={18} /> : <FaChevronLeft size={18} />}
+      </button>
+    </>
   );
 };
 

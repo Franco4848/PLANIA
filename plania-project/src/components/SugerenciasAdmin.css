@@ -1,34 +1,28 @@
 .admin-panel {
   padding: 20px 40px;
-  max-width: 1000px;
-  margin-left: 100px; 
-  margin-top: 40px;
+  max-width: 900px;
+  margin: 40px auto; /* centrado horizontal + margen superior */
 }
 
+/* Título centrado */
 .admin-panel h2 {
   margin-bottom: 10px;
   font-size: 24px;
   font-weight: 600;
-  padding-left: 250px;
+  text-align: center;
 }
 
-.admin-panel p {
-  margin-bottom: 20px;
-  font-size: 16px;
-  color: #333;
-  padding-left: 250px;
-}
-
+/* Mensaje de error alineado */
 .admin-panel .error {
   color: red;
-  padding-left: 40px;
+  text-align: center;
 }
 
+/* Tabla centrada */
 .admin-panel table {
   width: 80%;
-  margin-left: 250px; 
+  margin: 20px auto; /* centrado horizontal + margen superior */
   border-collapse: collapse;
-  margin-top: 20px;
   background-color: #fff;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
   border-radius: 6px;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './login.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,14 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  // Redirigir si ya hay sesión activa
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/mapa');
+    }
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -22,7 +30,7 @@ function Login() {
 
       localStorage.setItem('token', access_token);
 
-      // Decodificar el token (opcional si no usás el rol acá)
+      // Decodificar el token (opcional si extraemos datos como el rol)
       const base64 = access_token.split('.')[1];
       const json = decodeURIComponent(
         atob(base64)
@@ -42,7 +50,7 @@ function Login() {
   return (
     <div className="login-wrapper">
       <div className="login-container">
-        <img src="/plania.png" alt="PLANIA" className="login-logo" />
+        <img src="/PLANIA-LOGOTIPO.png" alt="PLANIA" className="login-logo" />
         <h2>Iniciar sesión</h2>
 
         <form className="login-form" onSubmit={(e) => e.preventDefault()}>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generarRecomendaciones } from '../services/IAservice';
+import './IAChat.css';
 
 export default function IAChat({
   userPosition,
@@ -70,21 +71,24 @@ export default function IAChat({
       .finally(() => setLoading(false));
   };
 
+  const actualizarSliderEstilo = (valor) => {
+    const porcentaje = ((valor - 10) / (200 - 10)) * 100;
+    const slider = document.querySelector('.ia-slider');
+    if (slider) {
+      slider.style.background = `linear-gradient(to right, #4CAF50 0%, #4CAF50 ${porcentaje}%, #fff ${porcentaje}%, #fff 100%)`;
+    }
+  };
+
+  useEffect(() => {
+    actualizarSliderEstilo(presupuesto);
+  }, [presupuesto]);
+
   const renderJustificacionNumerada = (texto) => {
     return texto
       .split('\n')
       .filter((linea) => linea.trim() !== '')
       .map((linea, index) => (
-        <div
-          key={index}
-          style={{
-            fontSize: '14px',
-            marginBottom: '4px',
-            lineHeight: '1.4',
-            fontFamily: 'Nunito, sans-serif',
-            color: '#333'
-          }}
-        >
+        <div key={index} className="ia-linea">
           {linea}
         </div>
       ));
@@ -98,15 +102,14 @@ export default function IAChat({
   };
 
   return (
-    <div>
-      <h2>🤖 Asistente Inteligente</h2>
+    <div className="ia-container">
+      <h2 className="ia-titulo">🤖 Asistente Inteligente</h2>
 
       {!justificacionIA ? (
         <>
-          {/* 💵 Presupuesto disponible */}
-          <div style={{ marginBottom: '20px' }}>
-            <label>
-              💵 Presupuesto disponible (USD) <span style={{ fontSize: '12px', color: '#c00' }}>(obligatorio, entre $10 y $200)</span>
+          <div className="ia-input-group">
+            <label className="ia-label">
+              💵 Presupuesto disponible (USD) <span className="ia-aviso">(obligatorio, entre $10 y $200)</span>
             </label>
             <input
               type="range"
@@ -114,17 +117,21 @@ export default function IAChat({
               max="200"
               step="10"
               value={presupuesto}
-              onChange={(e) => setPresupuesto(parseInt(e.target.value))}
+              onChange={(e) => {
+                const nuevo = parseInt(e.target.value);
+                setPresupuesto(nuevo);
+                actualizarSliderEstilo(nuevo);
+              }}
+              className="ia-slider"
             />
-            <div style={{ marginTop: '8px', fontSize: '14px' }}>
+            <div className="ia-rango-info">
               Seleccionado: <strong>{presupuesto > 0 ? `$${presupuesto}` : 'No definido'}</strong>
             </div>
           </div>
 
-          {/* 🧑‍🤝‍🧑 Cantidad de personas */}
-          <div style={{ marginBottom: '20px' }}>
-            <label>
-              🧑‍🤝‍🧑 Cantidad de personas <span style={{ fontSize: '12px', color: '#c00' }}>(obligatorio) (máximo 4)</span>
+          <div className="ia-input-group">
+            <label className="ia-label">
+              🧑‍🤝‍🧑 Cantidad de personas <span className="ia-aviso">(obligatorio) (máximo 4)</span>
             </label>
             <input
               type="number"
@@ -132,14 +139,13 @@ export default function IAChat({
               max="4"
               value={cantidadPersonas}
               onChange={(e) => setCantidadPersonas(parseInt(e.target.value))}
-              style={{ width: '60px', marginLeft: '10px' }}
+              className="ia-input-number"
             />
           </div>
 
-          {/* 📅 Cantidad de días */}
-          <div style={{ marginBottom: '20px' }}>
-            <label>
-              📅 Cantidad de días <span style={{ fontSize: '12px', color: '#c00' }}>(obligatorio) (máximo 3)</span>
+          <div className="ia-input-group">
+            <label className="ia-label">
+              📅 Cantidad de días <span className="ia-aviso">(obligatorio) (máximo 3)</span>
             </label>
             <input
               type="number"
@@ -147,22 +153,22 @@ export default function IAChat({
               max="3"
               value={cantidadDias}
               onChange={(e) => setCantidadDias(parseInt(e.target.value))}
-              style={{ width: '60px', marginLeft: '10px' }}
+              className="ia-input-number"
             />
           </div>
 
-          <div style={{ fontSize: '12px', color: '#777', marginTop: '4px' }}>
+          <div className="ia-campos-obligatorios">
             Campos obligatorios para generar el itinerario.
           </div>
 
-          <button onClick={consultarIA} disabled={loading}>
+          <button onClick={consultarIA} disabled={loading} className="boton-azul">
             {loading ? 'Generando...' : '¿Qué puedo hacer hoy?'}
           </button>
         </>
       ) : (
-        <div style={{ marginBottom: '20px', fontSize: '14px', color: '#444' }}>
+        <div className="ia-parametros">
           <h4>Parámetros seleccionados:</h4>
-          <ul style={{ paddingLeft: '20px' }}>
+          <ul>
             <li>💵 Presupuesto: <strong>${presupuesto}</strong></li>
             <li>🧑‍🤝‍🧑 Personas: <strong>{cantidadPersonas}</strong></li>
             <li>📅 Días: <strong>{cantidadDias}</strong></li>
@@ -170,23 +176,14 @@ export default function IAChat({
         </div>
       )}
 
-      {/* 🧠 Justificación IA */}
       {justificacionIA && (
         <>
-          <div
-            style={{
-              marginBottom: '20px',
-              background: '#f9f9f9',
-              padding: '8px',
-              borderRadius: '6px',
-              border: '1px solid #ddd'
-            }}
-          >
-            <h4 style={{ marginBottom: '8px' }}>🧠 Recomendación de la IA:</h4>
+          <div className="ia-justificacion">
+            <h4>🧠 Recomendación de la IA:</h4>
             {renderJustificacionNumerada(justificacionIA)}
           </div>
 
-          <button onClick={reiniciarConsulta} style={{ marginBottom: '20px' }}>
+          <button onClick={reiniciarConsulta} className="boton-azul">
             Regenerar recomendación
           </button>
         </>

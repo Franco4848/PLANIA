@@ -4,10 +4,10 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #d4d4d4;
+  background-color: #ffffff;
 }
 
-/* Caja del formulario */
+
 .register-container {
   background-color: #474b57de;
   color: #ffffff;
@@ -88,7 +88,7 @@
   align-items: center;
 }
 
-/* Selector de intereses */
+
 .intereses-label {
   font-size: 14px;
   margin-bottom: 6px;
@@ -129,7 +129,6 @@
   font-size: 14px;
 }
 
-/* Dropdown de intereses */
 .intereses-dropdown {
   margin-top: 6px;
   background-color: #5a5e6b;

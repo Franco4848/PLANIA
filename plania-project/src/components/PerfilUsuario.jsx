@@ -4,6 +4,7 @@ import {
   obtenerRutasDelUsuario,
   eliminarRuta
 } from '../services/rutaService';
+import './PerfilUsuario.css';
 
 export default function PerfilUsuario() {
   const [usuario, setUsuario] = useState(null);
@@ -79,28 +80,20 @@ export default function PerfilUsuario() {
         <p>No se pudo cargar la información del usuario.</p>
       )}
 
-      <h3 style={{ marginTop: '30px' }}>Historial de rutas</h3>
+      <h3>Historial de rutas</h3>
 
       {rutas.length > 0 ? (
-        <ul style={{ marginTop: '10px' }}>
+        <ul>
           {rutas.map((ruta) => (
-            <li key={ruta._id} style={{ marginBottom: '12px', padding: '10px', border: '1px solid #ccc', borderRadius: '6px' }}>
+            <li key={ruta._id}>
               <p><strong>Destino:</strong> {`Lat: ${ruta.destino.lat}, Lng: ${ruta.destino.lng}`}</p>
               <p><strong>Paradas:</strong> {ruta.waypoints.length}</p>
               <p><strong>Fecha:</strong> {new Date(ruta.fecha).toLocaleString()}</p>
               <button
                 onClick={() => handleEliminarRuta(ruta._id)}
-                style={{
-                  marginTop: '8px',
-                  padding: '6px 12px',
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                className="boton-eliminar-ruta"
               >
-              Eliminar ruta
+                Eliminar ruta
               </button>
             </li>
           ))}
@@ -111,15 +104,7 @@ export default function PerfilUsuario() {
 
       <button
         onClick={cerrarSesion}
-        style={{
-          marginTop: '40px',
-          padding: '10px 20px',
-          backgroundColor: '#d9534f',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
+        className="boton-cerrar-sesion"
       >
         Cerrar sesión
       </button>

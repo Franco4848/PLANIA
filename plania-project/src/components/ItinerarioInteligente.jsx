@@ -1,5 +1,6 @@
 import React from 'react';
 import { guardarRuta } from '../services/rutaService';
+import './ItinerarioInteligente.css';
 
 export default function ItinerarioInteligente({
   actividades,
@@ -61,24 +62,23 @@ export default function ItinerarioInteligente({
   };
 
   return (
-    <div>
+    <div className="itinerario-container">
       <h2>📋 Itinerario</h2>
 
-      {/* Actividades recomendadas */}
-      <div style={{ marginTop: '20px' }}>
+      <div className="itinerario-section">
         <h3>🧠 Actividades recomendadas por la IA</h3>
         {actividades.length === 0 ? (
-          <p>⚠️ No hay actividades en el itinerario.</p>
+          <p>No hay actividades en el itinerario.</p>
         ) : (
-          <ul>
+          <ul className="itinerario-list">
             {actividades.map((act, index) => {
               const costo = extraerCosto(act.nombre, justificacionIA);
               return (
-                <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <li key={index} className="itinerario-item">
                   <span>
                     <strong>{act.nombre}</strong> ({act.categoria}) {costo && <span>– <strong>{costo}</strong></span>}
                   </span>
-                  <button onClick={() => eliminarActividad(index)} style={{ marginLeft: '10px' }}>Eliminar</button>
+                  <button onClick={() => eliminarActividad(index)} className="boton-eliminar">Eliminar</button>
                 </li>
               );
             })}
@@ -86,23 +86,22 @@ export default function ItinerarioInteligente({
         )}
       </div>
 
-      {/* Actividades sugeridas */}
-      <div style={{ marginTop: '30px' }}>
+      <div className="itinerario-section">
         <h3>➕ Otras actividades cercanas a ti</h3>
         {actividades.length === 0 ? (
-          <p>⚠️ No hay actividades en el itinerario.</p>
+          <p>No hay actividades en el itinerario.</p>
         ) : (
           <>
             {sugerenciasIA.length === 0 ? (
               <p>✅ Ya se agregaron todas las actividades sugeridas.</p>
             ) : (
-              <ul>
+              <ul className="itinerario-list">
                 {sugerenciasIA.map((act, i) => (
-                  <li key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <li key={i} className="itinerario-item">
                     <span>
                       <strong>{act.nombre}</strong> ({act.categoria}) – <strong>${act.costo} USD</strong>
                     </span>
-                    <button onClick={agregarActividadExtra}>Agregar actividad</button>
+                    <button onClick={agregarActividadExtra} className="boton-agregar">Agregar actividad</button>
                   </li>
                 ))}
               </ul>
@@ -111,11 +110,10 @@ export default function ItinerarioInteligente({
         )}
       </div>
 
-      {/* Botones de acción */}
       {actividades.length > 0 && (
-        <div style={{ marginTop: '30px', display: 'flex', gap: '12px' }}>
-          <button onClick={mostrarRutaEnMapa}>Mostrar ruta</button>
-          <button onClick={guardarRutaEnBD}>Guardar ruta</button>
+        <div className="botones-acciones">
+          <button onClick={mostrarRutaEnMapa} className="boton-mostrar">Mostrar ruta</button>
+          <button onClick={guardarRutaEnBD} className="boton-guardar">Guardar ruta</button>
         </div>
       )}
     </div>

@@ -8,9 +8,9 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  // Redirigir si ya hay sesión activa
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -19,18 +19,22 @@ function Login() {
   }, []);
 
   const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage('Por favor completá todos los campos.');
+      return;
+    }
+
     try {
       const res = await login({ email, password });
       const { access_token } = res;
 
       if (!access_token) {
-        alert('No se recibió token. Verificá credenciales o conexión.');
+        setErrorMessage('No se recibió token. Verificá credenciales o conexión.');
         return;
       }
 
       localStorage.setItem('token', access_token);
 
-      // Decodificar el token (opcional si extraemos datos como el rol)
       const base64 = access_token.split('.')[1];
       const json = decodeURIComponent(
         atob(base64)
@@ -43,7 +47,8 @@ function Login() {
       navigate('/mapa');
     } catch (err) {
       console.error('Error al iniciar sesión:', err);
-      alert('Credenciales inválidas o error de conexión');
+      const msg = err?.response?.data?.message || 'Credenciales inválidas o error de conexión';
+      setErrorMessage(msg);
     }
   };
 
@@ -52,6 +57,10 @@ function Login() {
       <div className="login-container">
         <img src="/PLANIA-LOGOTIPO.png" alt="PLANIA" className="login-logo" />
         <h2>Iniciar sesión</h2>
+
+        {errorMessage && (
+          <p className="error-message" role="alert">{errorMessage}</p>
+        )}
 
         <form className="login-form" onSubmit={(e) => e.preventDefault()}>
           <input

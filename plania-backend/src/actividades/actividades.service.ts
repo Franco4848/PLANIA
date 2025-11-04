@@ -33,7 +33,7 @@ export class ActividadesService {
       'parques': 'park',
       'galerías': 'art_gallery',
       'cines': 'movie_theater',
-      'atracciones': 'tourist_attraction',
+      'atracción': 'tourist_attraction',
       'plazas': 'park',
       'bodegas': 'winery'
     };
@@ -143,7 +143,7 @@ export class ActividadesService {
         .replace('Closed', 'Cerrado')
         .replace('Open 24 hours', 'Abierto 24 horas')
         .replace(/AM|PM/g, '')
-        .replace(/\u202f/g, '') // elimina espacios finos
+        .replace(/\u202f/g, '')
 
       return `${diaEs}: ${texto.trim()}`;
     });

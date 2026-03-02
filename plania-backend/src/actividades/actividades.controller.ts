@@ -31,7 +31,7 @@ export class ActividadesController {
   }
 }
 
-// 🔠 Traductor simple de categorías de Google a español
+// Traductor simple de categorías de Google a español
 function traducirCategoria(tipo: string | undefined): string {
   const mapa: Record<string, string> = {
     cafe: 'cafetería',

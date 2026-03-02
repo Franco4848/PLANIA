@@ -101,6 +101,24 @@ VITE_GOOGLE_MAPS_API_KEY= Ingresa tu API key (Google)
      - cd plania-project
      - npm run test
 
+# Endpoints REST implementados
+
+- POST /api/login Autentica al usuario y devuelve un JWT válido.
+- POST /api/register Registra un nuevo usuario en la base de datos.
+- GET /users Lista todos los usuarios JWT + Rol admin
+- GET /users/:id Obtiene un usuario por ID JWT
+- PUT /users/:id Actualiza los datos de un usuario	JWT
+- DELETE /users/:id	Elimina un usuario por ID	JWT + Rol admin
+- GET /actividades/buscar Busca actividades turísticas en base a coordenadas y tipo de lugar.
+- POST	/ia/recomendar Genera un plan turístico completo según ubicación, clima, intereses y preferencias.
+- POST /rutas/guardar Guarda una nueva ruta para el usuario autenticado	JWT
+- GET /rutas/mias Lista todas las rutas guardadas por el usuario JWT
+- DELETE /rutas/:id	Elimina una ruta específica del usuario	JWT
+
+
+- GET /api/test/ping Verifica que el servidor esté activo.
+- GET /api/test/protected
+
 ## API GraphQL
 
 funcionalidad de sugerencias de actividades que permite a los usuarios colaborar con el sistema proponiendo nuevas ideas o problemas que surjan para poder enriquecer el sistema.

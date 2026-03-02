@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #d4d4d4;
+  background-color: #ffffff;
 }
 
 .login-container {
@@ -19,8 +19,8 @@
 }
 
 .login-logo {
-  width: 100%;
-  max-width: 180px;
+  width: 150%;
+  max-width: 250px;
   margin: 0 auto 10px auto;
   display: block;
 }
@@ -112,6 +112,15 @@
 .secondary-btn:hover {
   background-color: #2c2f3a;
 }
+
+.error-message {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ff4d4d;
+  font-weight: 400;
+  text-align: center;
+}
+
 
 /* Responsive styles */
 @media (max-width: 480px) {

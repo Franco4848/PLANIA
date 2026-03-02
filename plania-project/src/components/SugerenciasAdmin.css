@@ -1,0 +1,46 @@
+.admin-panel {
+  padding: 20px 40px;
+  max-width: 900px;
+  margin: 40px auto; /* centrado horizontal + margen superior */
+}
+
+/* Título centrado */
+.admin-panel h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Mensaje de error alineado */
+.admin-panel .error {
+  color: red;
+  text-align: center;
+}
+
+/* Tabla centrada */
+.admin-panel table {
+  width: 80%;
+  margin: 20px auto; /* centrado horizontal + margen superior */
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.admin-panel th {
+  padding: 12px;
+  border-bottom: 2px solid #ccc;
+  text-align: left;
+  background-color: #f0f0f0;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.admin-panel td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+  font-size: 14px;
+}

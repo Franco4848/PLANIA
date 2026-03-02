@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node16",
+    "target": "es2017",
+    "types": ["jest", "node"],
+    "resolvePackageJsonExports": false
+  },
+  "include": ["src", "test"]
+}

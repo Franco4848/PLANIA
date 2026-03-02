@@ -1,0 +1,21 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Sugerencia {
+  _id: ID!
+  mensaje: String!
+  emailAutor: String!
+}
+
+type Query {
+  sugerencias: [Sugerencia!]!
+}
+
+type Mutation {
+  crearSugerencia(input: CreateSugerenciaInput!): Sugerencia!
+}
+
+input CreateSugerenciaInput {
+  mensaje: String!
+}

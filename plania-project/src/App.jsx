@@ -18,6 +18,8 @@ import PerfilUsuario from './components/PerfilUsuario';
 import Login from './components/Login';
 import Register from './components/Register';
 import RutaPrivada from './components/RutaPrivada';
+import UsuariosAdmin from './components/UsuariosAdmin';
+import SugerenciasAdmin from './components/SugerenciasAdmin';
 
 import './App.css';
 
@@ -90,7 +92,9 @@ function AppContent() {
 
   return (
     <div className="app-container">
-      {location.pathname !== '/login' && location.pathname !== '/register' && <Navbar />}
+      {location.pathname !== '/login' && location.pathname !== '/register' && (
+        <Navbar />
+      )}
 
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
@@ -254,6 +258,22 @@ function AppContent() {
                   <PerfilUsuario />
                 </div>
               </>
+            </RutaPrivada>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <RutaPrivada requiredRole="admin">
+              <UsuariosAdmin />
+            </RutaPrivada>
+          }
+        />
+        <Route
+          path="/sugerencias-admin"
+          element={
+            <RutaPrivada requiredRole="admin">
+              <SugerenciasAdmin />
             </RutaPrivada>
           }
         />

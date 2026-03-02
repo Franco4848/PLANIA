@@ -40,7 +40,7 @@ export class IaService {
 
       const lugares = await this.obtenerUnaActividadPorTipo(data.lat, data.lng, data.intereses);
 
-      // ✅ Aseguramos margen suficiente para 3–5 actividades por día
+      // 3–5 actividades por día
       const maxActividades = data.dias * 5;
       const lugaresLimitados = lugares.slice(0, maxActividades);
       console.log('Lugares seleccionados:', lugaresLimitados);
@@ -106,14 +106,14 @@ export class IaService {
         ? response.data.response
         : '[Respuesta no disponible]';
 
-      console.log('🧠 Respuesta IA:', texto);
+      console.log('Respuesta IA:', texto);
 
       return {
         respuesta: texto,
         lugares
       };
     } catch (error) {
-      console.error('❌ Error IA:', error.response?.data || error.message);
+      console.error('Error IA:', error.response?.data || error.message);
       throw new Error('Error al generar recomendaciones');
     }
   }

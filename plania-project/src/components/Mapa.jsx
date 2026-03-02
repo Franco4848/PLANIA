@@ -7,6 +7,7 @@ import {
   DirectionsRenderer
 } from '@react-google-maps/api';
 import { FaCrosshairs } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import './PrecisionButton.css';
 
 const containerStyle = {
@@ -26,8 +27,30 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
   const [loading, setLoading] = useState(false);
   const [rutaCalculada, setRutaCalculada] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+  const navigate = useNavigate();
 
-  // 🧭 Buscar lugares si estás en filtro
+  // Validar token y rol
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const role = payload.role;
+
+      if (role !== 'user' && role !== 'admin') {
+        navigate('/unauthorized');
+      }
+    } catch (err) {
+      console.error('Token inválido:', err);
+      navigate('/login');
+    }
+  }, []);
+
+  // Buscar lugares si estás en filtro
   useEffect(() => {
     if (!userPosition || activeTab !== 'filtro') return;
 
@@ -41,7 +64,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
       .finally(() => setLoading(false));
   }, [activeTab, filtroTipo, userPosition]);
 
-  // 🧭 Calcular ruta si estás en itinerario
+  // Calcular ruta si estás en itinerario
   useEffect(() => {
     if (!userPosition || !rutaDatos || activeTab !== 'itinerario') return;
 
@@ -72,7 +95,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
     );
   }, [rutaDatos, userPosition, activeTab]);
 
-  // 🧹 Limpiar ruta si salís de itinerario
+  // Limpiar ruta si salís de itinerario
   useEffect(() => {
     if (activeTab !== 'itinerario') {
       setRutaCalculada(null);
@@ -88,9 +111,9 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
         center={userPosition}
         zoom={16}
         onLoad={(map) => setMapRef(map)}
-        options={{ gestureHandling: 'greedy', fullscreenControl: false }}
+        options={{ gestureHandling: 'greedy', fullscreenControl: false, mapTypeControl: false }}
       >
-        {/* 📍 Tu ubicación */}
+        {/* Tu ubicación */}
         <Marker
           position={userPosition}
           title="Tu ubicación"
@@ -102,7 +125,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
           }}
         />
 
-        {/* 📍 Lugares filtrados */}
+        {/* Lugares filtrados */}
         {activeTab === 'filtro' && !loading && lugares.length > 0 &&
           lugares.map((lugar, index) => {
             if (!lugar?.coordenadas?.lat || !lugar?.coordenadas?.lng) return null;
@@ -119,7 +142,7 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
             );
           })}
 
-        {/* 🧠 InfoWindow */}
+        {/* InfoWindow */}
         {selectedLugar && (
           <InfoWindow
             position={{
@@ -155,13 +178,13 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
           </InfoWindow>
         )}
 
-        {/* 🧭 Renderizado de ruta solo en itinerario */}
+        {/* Renderizado de ruta solo en itinerario */}
         {activeTab === 'itinerario' && rutaCalculada && (
           <DirectionsRenderer directions={rutaCalculada} />
         )}
       </GoogleMap>
 
-      {/* 🎯 Botón de precisión */}
+      {/* Botón de precisión */}
       <div
         className="precision-button"
         onClick={() => {
@@ -178,4 +201,3 @@ const Mapa = ({ filtroTipo, activeTab, userPosition, rutaDatos }) => {
 };
 
 export default Mapa;
-  

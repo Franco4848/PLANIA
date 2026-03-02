@@ -56,7 +56,7 @@ function Register() {
   return (
     <div className="register-wrapper">
       <div className="register-container">
-        <img src="/plania.png" alt="PLANIA" className="register-logo" />
+        <img src="/PLANIA-LOGOTIPO.png" alt="PLANIA" className="register-logo" />
         <h2>Crear cuenta</h2>
 
         <form className="register-form" onSubmit={(e) => e.preventDefault()}>

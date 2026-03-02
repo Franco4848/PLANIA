@@ -1,0 +1,139 @@
+.usuarios-admin-container {
+  padding: 1rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: sans-serif;
+  font-size: 1rem;
+}
+
+/* Tabla */
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  overflow-x: auto;
+}
+
+.usuarios-table thead {
+  background-color: #f0f0f0;
+}
+
+.usuarios-table th {
+  text-align: left;
+  padding: 0.6rem;
+  border-bottom: 1px solid #ccc;
+  font-weight: 600;
+  color: #333;
+}
+
+.usuarios-table td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+  color: #444;
+}
+
+/* Botones dentro de la tabla */
+.usuarios-table td button {
+  margin-right: 0.3rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-editar {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #0056b3;
+}
+
+.btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background-color: #c82333;
+}
+
+/* Formulario */
+.usuario-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.usuario-form input {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1 1 180px;
+  font-size: 0.95rem;
+}
+
+.btn-confirmar {
+  padding: 0.6rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-confirmar:hover {
+  background-color: #218838;
+}
+
+/* Mensajes de advertencia */
+.mensaje-alerta {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  color: #856404;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .usuarios-admin-container {
+    padding: 1rem;
+  }
+
+  .usuario-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .usuario-form input,
+  .btn-confirmar {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .usuarios-table {
+    font-size: 0.85rem;
+    overflow-x: auto;
+    display: block;
+  }
+
+  .usuarios-table th,
+  .usuarios-table td {
+    padding: 0.5rem;
+  }
+
+  .usuarios-table td button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.7rem;
+  }
+}

@@ -1,0 +1,101 @@
+.itinerario-container {
+  font-family: Nunito, sans-serif;
+  padding: 12px 20px 20px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.itinerario-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.itinerario-section {
+  margin-top: 20px;
+}
+
+.itinerario-section h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.itinerario-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.itinerario-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.itinerario-item span {
+  font-size: 15px;
+  flex-grow: 1;
+}
+
+.boton-eliminar {
+  background-color: #d32f2f;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.boton-eliminar:hover {
+  background-color: #b71c1c;
+}
+
+.boton-agregar {
+  background-color: #388e3c;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.boton-agregar:hover {
+  background-color: #2e7d32;
+}
+
+.boton-mostrar {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.boton-mostrar:hover {
+  background-color: #1565c0;
+}
+
+.boton-guardar {
+  background-color: #fff;
+  color: #2e7d32;
+  border: 2px solid #2e7d32;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.boton-guardar:hover {
+  background-color: #e8f5e9;
+}
+
+.botones-acciones {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+}

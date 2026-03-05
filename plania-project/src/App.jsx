@@ -52,12 +52,7 @@ function AppContent() {
     const decodePayload = (token) => {
       try {
         const base64 = token.split('.')[1];
-        const json = decodeURIComponent(
-          atob(base64)
-            .split('')
-            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-        );
+        const json = atob(base64);
         return JSON.parse(json);
       } catch (err) {
         console.error('Error al decodificar el token:', err);
@@ -68,8 +63,17 @@ function AppContent() {
     const token = localStorage.getItem('token');
     if (token) {
       const payload = decodePayload(token);
-      if (payload && Array.isArray(payload.interests)) {
-        setInteresesUsuario(payload.interests);
+      if (payload && payload.exp) {
+        const exp = payload.exp * 1000; // exp viene en segundos
+        if (Date.now() > exp) {
+          // Token vencido → limpiar
+          localStorage.removeItem('token');
+        } else if (Array.isArray(payload.interests)) {
+          setInteresesUsuario(payload.interests);
+        }
+      } else {
+        // Token corrupto → limpiar
+        localStorage.removeItem('token');
       }
     }
   }, []);

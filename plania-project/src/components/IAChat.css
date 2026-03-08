@@ -1,121 +1,269 @@
+/* =========================
+   CONTENEDOR GENERAL
+========================= */
+
 .ia-container {
+
   font-family: Nunito, sans-serif;
+
+  width: 650px;
+  max-width: 90vw;
+
+  padding: 50px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  border: 1px solid #e5e7eb;
+
+  position: relative;
+
+  transition: all 0.25s ease;
+
 }
+
+/* línea multicolor inferior */
+
+.ia-container::after {
+
+  content: "";
+
+  position: absolute;
+
+  width: 100%;
+  height: 3px;
+
+  bottom: -4px;
+  left: 0;
+
+  border-radius: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #e6689a,
+    #b24c8a,
+    #3aaed8,
+    #f1d302,
+    #41b883,
+    #e67e22
+  );
+
+}
+
+/* =========================
+   TITULO
+========================= */
 
 .ia-titulo {
-  font-size: 24px;
-  margin-bottom: 20px;
+
+  font-size: 26px;
+
+  font-weight: 700;
+
+  color: #111827;
+
+  margin-bottom: 8px;
+
 }
 
-.ia-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
+/* =========================
+   SUBTITULO
+========================= */
+
+.ia-subtitle {
+
+  font-size: 16px;
+
+  color: #6b7280;
+
+  margin-bottom: 30px;
+
 }
 
-.ia-aviso {
-  font-size: 12px;
-  color: #c00;
-}
+/* =========================
+   INPUT GROUP
+========================= */
 
 .ia-input-group {
-  margin-bottom: 20px;
+
+  margin-bottom: 24px;
+
 }
+
+/* label */
+
+.ia-label {
+
+  display: block;
+
+  font-weight: 600;
+
+  font-size: 14px;
+
+  color: #111827;
+
+  margin-bottom: 6px;
+
+}
+
+/* aviso */
+
+.ia-aviso {
+
+  font-size: 12px;
+
+  color: #9ca3af;
+
+}
+
+/* =========================
+   SLIDER
+========================= */
 
 .ia-slider {
+
   width: 100%;
-  height: 8px;
+
+  height: 6px;
+
   border-radius: 6px;
+
   appearance: none;
+
   outline: none;
-  background: linear-gradient(to right, #4CAF50 0%, #4CAF50 50%, #fff 50%, #fff 100%);
-  border: 1px solid #000; 
-  box-sizing: border-box;
-  margin-top: 12px;
-  margin-bottom: 8px;
+
+  background: linear-gradient(
+    90deg,
+    #111827 0%,
+    #111827 50%,
+    #e5e7eb 50%,
+    #e5e7eb 100%
+  );
+
 }
 
+/* thumb */
 
 .ia-slider::-webkit-slider-thumb {
+
   appearance: none;
+
   width: 16px;
   height: 16px;
-  background-color: #2e7d32;
+
+  background: #111827;
+
   border-radius: 50%;
+
+  border: 2px solid white;
+
   cursor: pointer;
-  margin-top: -4px;
-  position: relative;
-  z-index: 2;
-  border: 2px solid #000; 
+
 }
 
+/* =========================
+   RANGO
+========================= */
 
 .ia-rango-info {
-  margin-top: 8px;
+
   font-size: 14px;
+
+  color: #6b7280;
+
+  margin-top: 6px;
+
 }
+
+/* =========================
+   INPUT NUMBER
+========================= */
 
 .ia-input-number {
-  width: 80px;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+
+  width: 70px;
+
+  padding: 8px;
+
+  border-radius: 8px;
+
+  border: 1px solid #e5e7eb;
+
   font-size: 14px;
-  margin-left: 10px;
+
 }
 
-.ia-campos-obligatorios {
-  font-size: 12px;
-  color: #777;
-  margin-top: 4px;
-}
+/* =========================
+   PARAMETROS
+========================= */
 
 .ia-parametros {
+
   margin-bottom: 20px;
-  font-size: 14px;
-  color: #444;
+
+  font-size: 15px;
+
+  color: #374151;
+
 }
 
-.ia-parametros ul {
-  padding-left: 20px;
-}
+/* =========================
+   JUSTIFICACION
+========================= */
 
 .ia-justificacion {
-  margin-bottom: 20px;
-  background: #f9f9f9;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+
+  background: #f8fafc;
+
+  padding: 18px;
+
+  border-radius: 12px;
+
+  border: 1px solid #e5e7eb;
+
+  margin-bottom: 24px;
+
 }
 
-.ia-justificacion h4 {
-  margin-bottom: 8px;
-}
+/* lineas */
 
 .ia-linea {
+
   font-size: 14px;
-  margin-bottom: 4px;
-  line-height: 1.4;
-  color: #333;
+
+  margin-bottom: 6px;
+
+  color: #374151;
+
 }
 
+/* =========================
+   BOTON PRINCIPAL
+========================= */
+
 .boton-azul {
-  background-color: #007BFF;
-  color: #fff;
+
+  background: #111827;
+
+  color: white;
+
+  border-radius: 12px;
+
+  padding: 14px 28px;
+
+  font-weight: 600;
+
   border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 15px;
+
   cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 16px;
+
+  transition: 0.2s;
+
 }
 
 .boton-azul:hover {
-  background-color: #0056b3;
-}
 
-.boton-azul:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  background: #2c8fb2;
+
 }

@@ -1,19 +1,16 @@
 import React from 'react';
+import './Filtro.css';
 
 const Filtro = ({ filtroTipo, setFiltroTipo }) => {
   return (
-    <div style={{
-      padding: '0.8rem',
-      border: '1px solid #ccc',
-      borderRadius: '6px',
-      fontSize: '0.9rem'
-    }}>
-      <h4>Filtrar actividades</h4>
+    <div className="filtro-container">
+
+      <h4 className="filtro-titulo">Filtrar actividades</h4>
 
       <select
+        className="filtro-select"
         value={filtroTipo}
         onChange={(e) => setFiltroTipo(e.target.value)}
-        style={{ marginBottom: '0.6rem', width: '100%' }}
       >
         <option value="todas">Todas</option>
         <option value="cafeterias">Cafeterías</option>
@@ -25,6 +22,7 @@ const Filtro = ({ filtroTipo, setFiltroTipo }) => {
         <option value="atracción">Atracciones</option>
         <option value="bodegas">Bodegas</option>
       </select>
+
     </div>
   );
 };

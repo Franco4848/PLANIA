@@ -1,0 +1,134 @@
+/* =========================
+   WRAPPER GENERAL
+========================= */
+
+.dashboard-wrapper {
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+/* =========================
+   CONTENEDOR MÁS ANCHO
+========================= */
+
+.dashboard-container {
+  max-width: 1150px;   /* 🔥 más ancho */
+  margin: 0 auto;
+  padding: 70px 60px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.dashboard-header {
+  margin-bottom: 60px;
+  position: relative;
+}
+
+/* línea superior inspirada en logo */
+.dashboard-header::before {
+  content: "";
+  position: absolute;
+  top: -25px;
+  left: 0;
+  width: 120px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #e6689a,
+    #b24c8a,
+    #3aaed8,
+    #f1d302,
+    #41b883,
+    #e67e22
+  );
+}
+
+.dashboard-header h1 {
+  font-size: 42px;      /* 🔥 más grande */
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.dashboard-header p {
+  font-size: 17px;
+  color: #6b7280;
+  max-width: 650px;
+}
+
+/* =========================
+   HERO CARD
+========================= */
+
+.hero-card {
+  background: white;
+  border-radius: 20px;
+  padding: 70px;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.hero-card:hover {
+  border-color: #d1d5db;
+}
+
+/* acento sutil de color en esquina */
+.hero-card::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  bottom: -4px;
+  left: 0;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #e6689a,
+    #b24c8a,
+    #3aaed8,
+    #f1d302,
+    #41b883,
+    #e67e22
+  );
+ 
+}
+
+/* TITULO HERO */
+
+.hero-card h2 {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.hero-card p {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 35px;
+  max-width: 500px;
+}
+
+/* BOTÓN PRINCIPAL */
+
+.hero-card button {
+  transition: 0.2s;
+
+  background: #111827;
+  color: white;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-weight: 600;
+  border: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.hero-card button:hover {
+  background: #2c8fb2;
+}

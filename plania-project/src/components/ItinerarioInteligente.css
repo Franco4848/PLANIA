@@ -1,101 +1,250 @@
+/* =========================
+   CONTENEDOR PRINCIPAL
+========================= */
+
 .itinerario-container {
+
   font-family: Nunito, sans-serif;
-  padding: 12px 20px 20px 20px;
+
   max-width: 720px;
+
   margin: 0 auto;
+
+  padding: 50px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  border: 1px solid #e5e7eb;
+
+  position: relative;
+
 }
+
+/* línea multicolor inferior */
+
+.itinerario-container::after {
+
+  content: "";
+
+  position: absolute;
+
+  bottom: -6px;
+  left: 0;
+
+  width: 100%;
+  height: 4px;
+
+  border-radius: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #e6689a,
+    #b24c8a,
+    #3aaed8,
+    #f1d302,
+    #41b883,
+    #e67e22
+  );
+
+}
+
+/* =========================
+   TITULO
+========================= */
 
 .itinerario-container h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
+
+  font-size: 28px;
+
+  font-weight: 700;
+
+  color: #111827;
+
+  margin-bottom: 26px;
+
 }
 
+/* =========================
+   SECCIONES
+========================= */
+
 .itinerario-section {
-  margin-top: 20px;
+
+  margin-top: 28px;
+
 }
 
 .itinerario-section h3 {
-  font-size: 18px;
-  margin-bottom: 12px;
+
+  font-size: 20px;
+
+  font-weight: 600;
+
+  color: #111827;
+
+  margin-bottom: 16px;
+
 }
+
+/* =========================
+   LISTA
+========================= */
 
 .itinerario-list {
+
   list-style: none;
-  padding-left: 0;
+
+  padding: 0;
+
 }
 
+/* =========================
+   TARJETA ACTIVIDAD
+========================= */
+
 .itinerario-item {
+
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
-  margin-bottom: 8px;
+
   gap: 12px;
+
+  margin-bottom: 12px;
+
+  padding: 14px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  background: #f9fafb;
+
+  transition: all 0.2s ease;
+
+}
+
+.itinerario-item:hover {
+
+  background: #f3f4f6;
+
 }
 
 .itinerario-item span {
+
   font-size: 15px;
+
+  color: #374151;
+
   flex-grow: 1;
+
 }
 
-.boton-eliminar {
-  background-color: #d32f2f;
-  color: #fff;
+/* =========================
+   BOTONES
+========================= */
+
+.boton-eliminar,
+.boton-agregar,
+.boton-mostrar,
+.boton-guardar {
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+
   font-size: 14px;
+
+  font-weight: 600;
+
   cursor: pointer;
-  margin-left: auto;
+
+  transition: all 0.2s ease;
+
+}
+
+/* eliminar */
+
+.boton-eliminar {
+
+  background: #111827;
+
+  color: white;
+
 }
 
 .boton-eliminar:hover {
-  background-color: #b71c1c;
+
+  background: #2c8fb2;
+
 }
 
+/* agregar */
+
 .boton-agregar {
-  background-color: #388e3c;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
+
+  background: #111827;
+
+  color: white;
+
 }
 
 .boton-agregar:hover {
-  background-color: #2e7d32;
+
+  background: #2c8fb2;
+
 }
 
+/* mostrar ruta */
+
 .boton-mostrar {
-  background-color: #1976d2;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 15px;
-  cursor: pointer;
+
+  background: #111827;
+
+  color: white;
+
 }
 
 .boton-mostrar:hover {
-  background-color: #1565c0;
+
+  background: #2c8fb2;
+
 }
 
+/* guardar */
+
 .boton-guardar {
-  background-color: #fff;
-  color: #2e7d32;
-  border: 2px solid #2e7d32;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 15px;
-  cursor: pointer;
+
+  background: white;
+
+  border: 2px solid #111827;
+
+  color: #111827;
+
 }
 
 .boton-guardar:hover {
-  background-color: #e8f5e9;
+
+  background: #f3f4f6;
+
 }
 
+/* =========================
+   ACCIONES
+========================= */
+
 .botones-acciones {
+
   margin-top: 30px;
+
   display: flex;
-  gap: 12px;
+
+  gap: 14px;
+
 }

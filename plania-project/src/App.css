@@ -8,7 +8,17 @@
   font-family: "Nunito", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f6fa;
 }
+
+/* Contenido principal dinámico */
+.main-content {
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
 
 .overlay-content {
   position: absolute;
@@ -25,8 +35,14 @@
   min-height: 60px;
   max-width: calc(100vw - 40px); /* 🧠 evita scroll lateral */
   overflow-x: auto;
+  
 }
-
+.main-content {
+  margin-left: 260px; /* AJUSTAR AL ANCHO REAL DEL NAVBAR */
+  width: calc(100% - 260px);
+  min-height: 100vh;
+  background-color: #e0e0e0;
+}
 .filtro-container h4 {
   margin-bottom: 8px;
   font-size: 16px;
@@ -39,4 +55,16 @@
   border: 1px solid #ccc;
   background-color: #f9f9f9;
   cursor: pointer;
+}
+/* evita scroll en toda la app */
+
+html, body {
+
+  margin: 0;
+  padding: 0;
+
+  height: 100%;
+
+  overflow: hidden;
+
 }

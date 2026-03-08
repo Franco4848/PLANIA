@@ -21,10 +21,15 @@ import RutaPrivada from './components/RutaPrivada';
 import UsuariosAdmin from './components/UsuariosAdmin';
 import SugerenciasAdmin from './components/SugerenciasAdmin';
 
+import Dashboard from './pages/Dashboard';
+
 import './App.css';
 
 function AppContent() {
+
   const location = useLocation();
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [filtroTipo, setFiltroTipo] = useState('todas');
   const [userPosition, setUserPosition] = useState(null);
@@ -41,6 +46,7 @@ function AppContent() {
   const [cantidadDias, setCantidadDias] = useState(1);
 
   useEffect(() => {
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -50,28 +56,43 @@ function AppContent() {
     );
 
     const decodePayload = (token) => {
+
       try {
+
         const base64 = token.split('.')[1];
+
         const json = decodeURIComponent(
           atob(base64)
             .split('')
             .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
             .join('')
         );
+
         return JSON.parse(json);
+
       } catch (err) {
+
         console.error('Error al decodificar el token:', err);
         return null;
+
       }
+
     };
 
     const token = localStorage.getItem('token');
+
     if (token) {
+
       const payload = decodePayload(token);
+
       if (payload && Array.isArray(payload.interests)) {
+
         setInteresesUsuario(payload.interests);
+
       }
+
     }
+
   }, []);
 
   const recibirActividadesIA = (lista) => {
@@ -84,84 +105,72 @@ function AppContent() {
   };
 
   const agregarActividadExtra = () => {
+
     if (sugerenciasIA.length === 0) return;
+
     const siguiente = sugerenciasIA[0];
+
     setActividadesIA((prev) => [...prev, siguiente]);
     setSugerenciasIA((prev) => prev.slice(1));
+
   };
 
   return (
+
     <div className="app-container">
+
       {location.pathname !== '/login' && location.pathname !== '/register' && (
-        <Navbar />
+
+        <Navbar
+          sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
+        />
+
       )}
 
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <div className="main-content">
 
-        <Route
-          path="/mapa"
-          element={
-            <RutaPrivada>
-              <Mapa
-                key={mapKey}
-                filtroTipo={filtroTipo}
-                activeTab="mapa"
-                userPosition={userPosition}
-                rutaDatos={rutaDatos}
-              />
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/filtro"
-          element={
-            <RutaPrivada>
-              <>
+        <Routes>
+
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* DASHBOARD */}
+
+          <Route
+            path="/dashboard"
+            element={
+              <RutaPrivada>
+                <Dashboard sidebarCollapsed={sidebarCollapsed} />
+              </RutaPrivada>
+            }
+          />
+
+          {/* MAPA */}
+
+          <Route
+            path="/mapa"
+            element={
+              <RutaPrivada>
                 <Mapa
                   key={mapKey}
                   filtroTipo={filtroTipo}
-                  activeTab="filtro"
+                  activeTab="mapa"
                   userPosition={userPosition}
                   rutaDatos={rutaDatos}
                 />
-                <div className="overlay-content">
-                  <Filtro filtroTipo={filtroTipo} setFiltroTipo={setFiltroTipo} />
-                </div>
-              </>
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/nube"
-          element={
-            <RutaPrivada>
-              <>
-                <Mapa
-                  key={mapKey}
-                  filtroTipo={filtroTipo}
-                  activeTab="nube"
-                  userPosition={userPosition}
-                  rutaDatos={rutaDatos}
-                />
-                <div className="overlay-content">
-                  <Clima userPosition={userPosition} />
-                </div>
-              </>
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/ia"
-          element={
-            <RutaPrivada>
-              {interesesUsuario.length === 0 ? (
-                <div className="overlay-content">
-                  <p>Cargando intereses del usuario...</p>
-                </div>
-              ) : (
+              </RutaPrivada>
+            }
+          />
+
+          {/* IA */}
+
+          <Route
+            path="/ia"
+            element={
+              <RutaPrivada>
                 <>
                   <Mapa
                     key={mapKey}
@@ -188,108 +197,175 @@ function AppContent() {
                     />
                   </div>
                 </>
-              )}
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/itinerario"
-          element={
-            <RutaPrivada>
-              <>
-                <Mapa
-                  key={mapKey}
-                  filtroTipo={filtroTipo}
-                  activeTab="itinerario"
-                  userPosition={userPosition}
-                  rutaDatos={rutaDatos}
-                />
-                <div className="overlay-content">
-                  <ItinerarioInteligente
-                    actividades={actividadesIA}
-                    setActividades={setActividadesIA}
-                    onRutaGenerada={setRutaDatos}
-                    userPosition={userPosition}
-                    interesesUsuario={interesesUsuario}
-                    justificacionIA={justificacionIA}
-                    setJustificacionIA={setJustificacionIA}
-                    agregarActividadExtra={agregarActividadExtra}
-                    sugerenciasIA={sugerenciasIA}
-                    setSugerenciasIA={setSugerenciasIA}
-                    cantidadDias={cantidadDias}
-                  />
-                </div>
-              </>
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/sugerencias"
-          element={
-            <RutaPrivada>
-              <>
-                <Mapa
-                  key={mapKey}
-                  filtroTipo={filtroTipo}
-                  activeTab="sugerencias"
-                  userPosition={userPosition}
-                  rutaDatos={rutaDatos}
-                />
-                <div className="overlay-content">
-                  <Sugerencias />
-                </div>
-              </>
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/perfil"
-          element={
-            <RutaPrivada>
-              <>
-                <Mapa
-                  key={mapKey}
-                  filtroTipo={filtroTipo}
-                  activeTab="perfil"
-                  userPosition={userPosition}
-                  rutaDatos={rutaDatos}
-                />
-                <div className="overlay-content">
-                  <PerfilUsuario />
-                </div>
-              </>
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/usuarios"
-          element={
-            <RutaPrivada requiredRole="admin">
-              <UsuariosAdmin />
-            </RutaPrivada>
-          }
-        />
-        <Route
-          path="/sugerencias-admin"
-          element={
-            <RutaPrivada requiredRole="admin">
-              <SugerenciasAdmin />
-            </RutaPrivada>
-          }
-        />
+              </RutaPrivada>
+            }
+          />
 
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+          {/* ITINERARIO */}
+
+          <Route
+            path="/itinerario"
+            element={
+              <RutaPrivada>
+                <>
+                  <Mapa
+                    key={mapKey}
+                    filtroTipo={filtroTipo}
+                    activeTab="itinerario"
+                    userPosition={userPosition}
+                    rutaDatos={rutaDatos}
+                  />
+                  <div className="overlay-content">
+                    <ItinerarioInteligente
+                      actividades={actividadesIA}
+                      setActividades={setActividadesIA}
+                      onRutaGenerada={setRutaDatos}
+                      userPosition={userPosition}
+                      interesesUsuario={interesesUsuario}
+                      justificacionIA={justificacionIA}
+                      setJustificacionIA={setJustificacionIA}
+                      agregarActividadExtra={agregarActividadExtra}
+                      sugerenciasIA={sugerenciasIA}
+                      setSugerenciasIA={setSugerenciasIA}
+                      cantidadDias={cantidadDias}
+                    />
+                  </div>
+                </>
+              </RutaPrivada>
+            }
+          />
+
+          {/* ACTIVIDADES CERCANAS */}
+
+          <Route
+            path="/filtro"
+            element={
+              <RutaPrivada>
+                <>
+                  <Mapa
+                    key={mapKey}
+                    filtroTipo={filtroTipo}
+                    activeTab="filtro"
+                    userPosition={userPosition}
+                    rutaDatos={rutaDatos}
+                  />
+                  <div className="overlay-content">
+                    <Filtro
+                      filtroTipo={filtroTipo}
+                      setFiltroTipo={setFiltroTipo}
+                    />
+                  </div>
+                </>
+              </RutaPrivada>
+            }
+          />
+
+          {/* SUGERENCIAS */}
+
+          <Route
+            path="/sugerencias"
+            element={
+              <RutaPrivada>
+                <>
+                  <Mapa
+                    key={mapKey}
+                    filtroTipo={filtroTipo}
+                    activeTab="sugerencias"
+                    userPosition={userPosition}
+                    rutaDatos={rutaDatos}
+                  />
+                  <div className="overlay-content">
+                    <Sugerencias />
+                  </div>
+                </>
+              </RutaPrivada>
+            }
+          />
+
+          {/* CLIMA */}
+
+          <Route
+            path="/nube"
+            element={
+              <RutaPrivada>
+                <>
+                  <Mapa
+                    key={mapKey}
+                    filtroTipo={filtroTipo}
+                    activeTab="nube"
+                    userPosition={userPosition}
+                    rutaDatos={rutaDatos}
+                  />
+                  <div className="overlay-content">
+                    <Clima userPosition={userPosition} />
+                  </div>
+                </>
+              </RutaPrivada>
+            }
+          />
+
+          {/* PERFIL */}
+
+          <Route
+            path="/perfil"
+            element={
+              <RutaPrivada>
+                <>
+                  <Mapa
+                    key={mapKey}
+                    filtroTipo={filtroTipo}
+                    activeTab="perfil"
+                    userPosition={userPosition}
+                    rutaDatos={rutaDatos}
+                  />
+                  <div className="overlay-content">
+                    <PerfilUsuario />
+                  </div>
+                </>
+              </RutaPrivada>
+            }
+          />
+
+          {/* ADMIN */}
+
+          <Route
+            path="/usuarios"
+            element={
+              <RutaPrivada requiredRole="admin">
+                <UsuariosAdmin />
+              </RutaPrivada>
+            }
+          />
+
+          <Route
+            path="/sugerencias-admin"
+            element={
+              <RutaPrivada requiredRole="admin">
+                <SugerenciasAdmin />
+              </RutaPrivada>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/dashboard" />} />
+
+        </Routes>
+
+      </div>
+
     </div>
+
   );
+
 }
 
 function App() {
+
   return (
     <Router>
       <AppContent />
     </Router>
   );
+
 }
 
 export default App;

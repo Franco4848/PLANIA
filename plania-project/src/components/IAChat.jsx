@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { generarRecomendaciones } from '../services/IAservice';
-import './IAChat.css';
+import React, { useState } from "react";
+import { generarRecomendaciones } from "../services/IAservice";
+import "./IAChat.css";
 
 export default function IAChat({
   userPosition,
@@ -9,7 +9,6 @@ export default function IAChat({
   onSugerenciasGeneradas,
   justificacionIA,
   setJustificacionIA,
-  actividadesVisiblesIA,
   presupuesto,
   setPresupuesto,
   cantidadPersonas,
@@ -17,21 +16,31 @@ export default function IAChat({
   cantidadDias,
   setCantidadDias
 }) {
+
   const [loading, setLoading] = useState(false);
 
-  const consultarIA = () => {
-    if (!userPosition || interesesUsuario.length === 0) return;
+  const validarCampos = () => {
 
-    if (
-      presupuesto < 10 || presupuesto > 200 ||
-      cantidadPersonas < 1 || cantidadPersonas > 4 ||
-      cantidadDias < 1 || cantidadDias > 3
-    ) {
-      alert('Completá todos los campos obligatorios con valores válidos (presupuesto entre $10 y $200, máximo 4 personas, máximo 3 días).');
+    if (!userPosition || interesesUsuario.length === 0) return false;
+
+    if (presupuesto < 10 || presupuesto > 200) return false;
+    if (cantidadPersonas < 1 || cantidadPersonas > 4) return false;
+    if (cantidadDias < 1 || cantidadDias > 3) return false;
+
+    return true;
+  };
+
+  const consultarIA = () => {
+
+    if (!validarCampos()) {
+      alert(
+        "Completá correctamente los campos.\nPresupuesto: $10-$200\nPersonas: máximo 4\nDías: máximo 3"
+      );
       return;
     }
 
     setLoading(true);
+
     generarRecomendaciones({
       lat: userPosition.lat.toString(),
       lng: userPosition.lng.toString(),
@@ -41,8 +50,9 @@ export default function IAChat({
       dias: cantidadDias
     })
       .then((data) => {
+
         if (!data || !data.respuesta || !Array.isArray(data.lugares)) {
-          console.error('Respuesta incompleta de IA:', data);
+          console.error("Respuesta incompleta de IA:", data);
           return;
         }
 
@@ -53,40 +63,36 @@ export default function IAChat({
         const sugerencias = [];
 
         for (const lugar of data.lugares) {
-          const cat = lugar.categoria;
-          if (!agrupadas.has(cat)) agrupadas.set(cat, []);
-          agrupadas.get(cat).push(lugar);
+
+          const categoria = lugar.categoria;
+
+          if (!agrupadas.has(categoria)) {
+            agrupadas.set(categoria, []);
+          }
+
+          agrupadas.get(categoria).push(lugar);
         }
 
-        for (const [categoria, lista] of agrupadas.entries()) {
-          const primera = lista[0];
-          if (primera) seleccionadas.push(primera);
+        for (const lista of agrupadas.values()) {
+
+          if (lista[0]) seleccionadas.push(lista[0]);
+
           sugerencias.push(...lista.slice(1));
         }
 
         onActividadesGeneradas(seleccionadas);
         onSugerenciasGeneradas(sugerencias);
+
       })
-      .catch((err) => console.error('Error IA:', err))
+      .catch((err) => console.error("Error IA:", err))
       .finally(() => setLoading(false));
   };
 
-  const actualizarSliderEstilo = (valor) => {
-    const porcentaje = ((valor - 10) / (200 - 10)) * 100;
-    const slider = document.querySelector('.ia-slider');
-    if (slider) {
-      slider.style.background = `linear-gradient(to right, #4CAF50 0%, #4CAF50 ${porcentaje}%, #fff ${porcentaje}%, #fff 100%)`;
-    }
-  };
+  const renderJustificacion = (texto) => {
 
-  useEffect(() => {
-    actualizarSliderEstilo(presupuesto);
-  }, [presupuesto]);
-
-  const renderJustificacionNumerada = (texto) => {
     return texto
-      .split('\n')
-      .filter((linea) => linea.trim() !== '')
+      .split("\n")
+      .filter((linea) => linea.trim() !== "")
       .map((linea, index) => (
         <div key={index} className="ia-linea">
           {linea}
@@ -95,6 +101,7 @@ export default function IAChat({
   };
 
   const reiniciarConsulta = () => {
+
     setJustificacionIA(null);
     setPresupuesto(10);
     setCantidadPersonas(1);
@@ -102,92 +109,120 @@ export default function IAChat({
   };
 
   return (
+
     <div className="ia-container">
-      <h2 className="ia-titulo">🤖 Asistente Inteligente</h2>
+
+      <h2 className="ia-titulo">🤖 Planificador Inteligente</h2>
+
+      <p className="ia-subtitle">
+        La inteligencia artificial analizará tu presupuesto,
+        tiempo disponible y preferencias para generar
+        un itinerario personalizado.
+      </p>
 
       {!justificacionIA ? (
+
         <>
           <div className="ia-input-group">
+
             <label className="ia-label">
-              💵 Presupuesto disponible (USD) <span className="ia-aviso">(obligatorio, entre $10 y $200)</span>
+              💵 Presupuesto disponible
+              <span className="ia-aviso"> (10 a 200 USD)</span>
             </label>
+
             <input
               type="range"
               min="10"
               max="200"
               step="10"
               value={presupuesto}
-              onChange={(e) => {
-                const nuevo = parseInt(e.target.value);
-                setPresupuesto(nuevo);
-                actualizarSliderEstilo(nuevo);
-              }}
+              onChange={(e) => setPresupuesto(Number(e.target.value))}
               className="ia-slider"
             />
+
             <div className="ia-rango-info">
-              Seleccionado: <strong>{presupuesto > 0 ? `$${presupuesto}` : 'No definido'}</strong>
+              Seleccionado: <strong>${presupuesto}</strong>
             </div>
+
           </div>
 
           <div className="ia-input-group">
+
             <label className="ia-label">
-              🧑‍🤝‍🧑 Cantidad de personas <span className="ia-aviso">(obligatorio) (máximo 4)</span>
+              🧑‍🤝‍🧑 Personas
+              <span className="ia-aviso"> (máximo 4)</span>
             </label>
+
             <input
               type="number"
               min="1"
               max="4"
               value={cantidadPersonas}
-              onChange={(e) => setCantidadPersonas(parseInt(e.target.value))}
+              onChange={(e) => setCantidadPersonas(Number(e.target.value))}
               className="ia-input-number"
             />
+
           </div>
 
           <div className="ia-input-group">
+
             <label className="ia-label">
-              📅 Cantidad de días <span className="ia-aviso">(obligatorio) (máximo 3)</span>
+              📅 Días
+              <span className="ia-aviso"> (máximo 3)</span>
             </label>
+
             <input
               type="number"
               min="1"
               max="3"
               value={cantidadDias}
-              onChange={(e) => setCantidadDias(parseInt(e.target.value))}
+              onChange={(e) => setCantidadDias(Number(e.target.value))}
               className="ia-input-number"
             />
+
           </div>
 
-          <div className="ia-campos-obligatorios">
-            Campos obligatorios para generar el itinerario.
-          </div>
-
-          <button onClick={consultarIA} disabled={loading} className="boton-azul">
-            {loading ? 'Generando...' : '¿Qué puedo hacer hoy?'}
+          <button
+            onClick={consultarIA}
+            disabled={loading}
+            className="boton-azul"
+          >
+            {loading ? "Generando itinerario..." : "Generar itinerario"}
           </button>
         </>
-      ) : (
-        <div className="ia-parametros">
-          <h4>Parámetros seleccionados:</h4>
-          <ul>
-            <li>💵 Presupuesto: <strong>${presupuesto}</strong></li>
-            <li>🧑‍🤝‍🧑 Personas: <strong>{cantidadPersonas}</strong></li>
-            <li>📅 Días: <strong>{cantidadDias}</strong></li>
-          </ul>
-        </div>
-      )}
 
-      {justificacionIA && (
+      ) : (
+
         <>
-          <div className="ia-justificacion">
-            <h4>🧠 Recomendación de la IA:</h4>
-            {renderJustificacionNumerada(justificacionIA)}
+          <div className="ia-parametros">
+
+            <h4>Parámetros seleccionados</h4>
+
+            <ul>
+              <li>💵 Presupuesto: ${presupuesto}</li>
+              <li>🧑‍🤝‍🧑 Personas: {cantidadPersonas}</li>
+              <li>📅 Días: {cantidadDias}</li>
+            </ul>
+
           </div>
 
-          <button onClick={reiniciarConsulta} className="boton-azul">
+          <div className="ia-justificacion">
+
+            <h4>🧠 Recomendación de la IA</h4>
+
+            {renderJustificacion(justificacionIA)}
+
+          </div>
+
+          <button
+            onClick={reiniciarConsulta}
+            className="boton-azul"
+          >
             Regenerar recomendación
           </button>
         </>
       )}
+
     </div>
   );
 }

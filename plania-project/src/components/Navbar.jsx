@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 import {
+  FaHome,
   FaMapMarkedAlt,
   FaMapMarkerAlt,
   FaListAlt,
@@ -15,8 +16,8 @@ import {
   FaChevronRight
 } from 'react-icons/fa';
 
-const Navbar = () => {
-  const [colapsado, setColapsado] = useState(false);
+const Navbar = ({ sidebarCollapsed, setSidebarCollapsed }) => {
+
   const token = localStorage.getItem('token');
   let rolUsuario = null;
 
@@ -37,12 +38,23 @@ const Navbar = () => {
   }
 
   const navItems = [
+
+    /* NUEVA PESTAÑA INICIO */
+
+    { to: '/dashboard', icon: <FaHome size={22} />, label: 'Inicio' },
+
     { to: '/mapa', icon: <FaMapMarkedAlt size={22} />, label: 'Mapa Interactivo' },
+
     { to: '/ia', icon: <FaRobot size={22} />, label: 'IA' },
+
     { to: '/itinerario', icon: <FaListAlt size={22} />, label: 'Itinerario' },
+
     { to: '/filtro', icon: <FaMapMarkerAlt size={22} />, label: 'Actividades cercanas' },
+
     { to: '/nube', icon: <FaCloud size={22} />, label: 'Clima' },
+
     { to: '/perfil', icon: <FaUser size={22} />, label: 'Mi Perfil' }
+
   ];
 
   const userItems = [
@@ -61,36 +73,51 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`navbar-container ${colapsado ? 'colapsado' : ''}`}>
+      <nav className={`navbar-container ${sidebarCollapsed ? 'colapsado' : ''}`}>
+
         <div className="navbar-header">
           <img
-            src={colapsado ? '/PLANIA-ISOLOGOTIPO.png' : '/PLANIA-LOGOTIPO.png'}
+            src={sidebarCollapsed ? '/PLANIA-ISOLOGOTIPO.png' : '/PLANIA-LOGOTIPO.png'}
             className="logo"
             alt="logo de PlanIA"
           />
         </div>
 
         <div className="navbar-body">
+
           {visibleItems.map(({ to, icon, label }) => (
+
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
+
               {icon}
-              {!colapsado && <span className="nav-text">{label}</span>}
+
+              {!sidebarCollapsed && (
+                <span className="nav-text">{label}</span>
+              )}
+
             </NavLink>
+
           ))}
+
         </div>
+
       </nav>
 
-      {/* Botón flotante externo */}
       <button
         className="collapse-btn-floating"
-        onClick={() => setColapsado(!colapsado)}
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
       >
-        {colapsado ? <FaChevronRight size={18} /> : <FaChevronLeft size={18} />}
+
+        {sidebarCollapsed
+          ? <FaChevronRight size={18} />
+          : <FaChevronLeft size={18} />}
+
       </button>
+
     </>
   );
 };

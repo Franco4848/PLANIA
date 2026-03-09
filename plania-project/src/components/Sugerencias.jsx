@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCrearSugerencia } from '../hook/useCrearSugerencia';
+import './Sugerencias.css';
 
 export default function Sugerencias() {
   const [mensaje, setMensaje] = useState('');
@@ -20,7 +21,7 @@ export default function Sugerencias() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="sugerencias-container">
       <h2>💬 Sugerencias</h2>
       <p>¿Tenés alguna mejora o problema que quieras reportar?</p>
       <textarea
@@ -28,12 +29,24 @@ export default function Sugerencias() {
         onChange={(e) => setMensaje(e.target.value)}
         placeholder="Escribí tu sugerencia aquí..."
         rows={5}
-        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}
+        className="sugerencias-textarea"
       />
-      <button onClick={enviarSugerencia} disabled={loading} style={{ marginTop: '10px' }}>
+      <button
+        onClick={enviarSugerencia}
+        disabled={loading}
+        className="sugerencias-button"
+      >
         {loading ? 'Enviando...' : 'Enviar sugerencia'}
       </button>
-      {confirmacion && <p style={{ marginTop: '10px', color: error ? 'red' : 'green' }}>{confirmacion}</p>}
+      {confirmacion && (
+        <p
+          className={`sugerencias-confirmacion ${
+            error ? 'error' : 'ok'
+          }`}
+        >
+          {confirmacion}
+        </p>
+      )}
     </div>
   );
 }

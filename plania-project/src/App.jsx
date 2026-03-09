@@ -80,19 +80,21 @@ function AppContent() {
     };
 
     const token = localStorage.getItem('token');
-
     if (token) {
-
       const payload = decodePayload(token);
-
-      if (payload && Array.isArray(payload.interests)) {
-
-        setInteresesUsuario(payload.interests);
-
+      if (payload && payload.exp) {
+        const exp = payload.exp * 1000; // exp viene en segundos
+        if (Date.now() > exp) {
+          // Token vencido → limpiar
+          localStorage.removeItem('token');
+        } else if (Array.isArray(payload.interests)) {
+          setInteresesUsuario(payload.interests);
+        }
+      } else {
+        // Token corrupto → limpiar
+        localStorage.removeItem('token');
       }
-
     }
-
   }, []);
 
   const recibirActividadesIA = (lista) => {

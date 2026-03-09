@@ -30,11 +30,16 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   min-height: 60px;
   max-width: calc(100vw - 40px); /* 🧠 evita scroll lateral */
   overflow-x: auto;
+  margin-left: 100px;
+  min-height: 100vh;
+  justify-content: center;
+  padding-top: 70px;
+  padding-bottom: 70px;
   
 }
 .main-content {
@@ -66,5 +71,11 @@ html, body {
   height: 100%;
 
   overflow: hidden;
+
+}
+
+.navbar-container.colapsado ~ .overlay-content {
+
+  margin-left: 90px;
 
 }

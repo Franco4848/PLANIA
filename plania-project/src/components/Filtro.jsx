@@ -3,7 +3,8 @@ import './Filtro.css';
 
 const Filtro = ({ filtroTipo, setFiltroTipo }) => {
   return (
-    <div className="filtro-container">
+
+    <div className="filtro-card">
 
       <h4 className="filtro-titulo">Filtrar actividades</h4>
 
@@ -24,6 +25,7 @@ const Filtro = ({ filtroTipo, setFiltroTipo }) => {
       </select>
 
     </div>
+
   );
 };
 

@@ -36,16 +36,24 @@ const Clima = ({ userPosition }) => {
 
   if (loading) {
     return (
-      <div className="clima-card">
-        <p>Cargando clima...</p>
+      <div className="clima-wrapper">
+        <div className="clima-container">
+          <div className="clima-card">
+            <p>Cargando clima...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!clima) {
     return (
-      <div className="clima-card">
-        <p>No se pudo obtener el clima.</p>
+      <div className="clima-wrapper">
+        <div className="clima-container">
+          <div className="clima-card">
+            <p>No se pudo obtener el clima.</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -53,18 +61,28 @@ const Clima = ({ userPosition }) => {
   const icono = weatherIcons[clima.weathercode] || "🌈";
 
   return (
-    <div className="clima-card">
-      <h3 className="clima-title">Clima actual</h3>
+    <div className="clima-wrapper">
 
-      <div className="clima-main">
-        <span className="clima-icon">{icono}</span>
-        <span className="clima-temp">{Math.round(clima.temperature)}°C</span>
+      <div className="clima-container">
+
+        <div className="clima-card">
+
+          <h3 className="clima-title">Clima actual</h3>
+
+          <div className="clima-main">
+            <span className="clima-icon">{icono}</span>
+            <span className="clima-temp">{Math.round(clima.temperature)}°C</span>
+          </div>
+
+          <div className="clima-details">
+            <p>💨 Viento: {clima.windspeed} km/h</p>
+            <p>🧭 Dirección: {clima.winddirection}°</p>
+          </div>
+
+        </div>
+
       </div>
 
-      <div className="clima-details">
-        <p>💨 Viento: {clima.windspeed} km/h</p>
-        <p>🧭 Dirección: {clima.winddirection}°</p>
-      </div>
     </div>
   );
 };

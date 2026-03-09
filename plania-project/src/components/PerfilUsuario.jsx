@@ -81,73 +81,86 @@ export default function PerfilUsuario() {
 
   return (
 
-    <div className="perfil-container">
+    <div className="perfil-wrapper">
 
-      <h2 className="perfil-titulo">👤 Mi Perfil</h2>
+      <div className="perfil-container">
 
-      {usuario ? (
+        {/* HEADER con línea superior */}
+        <div className="perfil-header">
+          <h1 className="perfil-titulo">👤 Mi Perfil</h1>
+        </div>
 
-        <div className="perfil-datos">
+        {/* TARJETA */}
+        <div className="perfil-card">
 
-          <p><strong>Nombre:</strong> {usuario.nombre || 'No definido'}</p>
-          <p><strong>Email:</strong> {usuario.correo || 'No definido'}</p>
+          {usuario ? (
 
-          {usuario.intereses.length > 0 ? (
-            <p><strong>Intereses:</strong> {usuario.intereses.join(', ')}</p>
+            <div className="perfil-datos">
+
+              <p><strong>Nombre:</strong> {usuario.nombre || 'No definido'}</p>
+              <p><strong>Email:</strong> {usuario.correo || 'No definido'}</p>
+
+              {usuario.intereses.length > 0 ? (
+                <p><strong>Intereses:</strong> {usuario.intereses.join(', ')}</p>
+              ) : (
+                <p><strong>Intereses:</strong> No definidos</p>
+              )}
+
+            </div>
+
           ) : (
-            <p><strong>Intereses:</strong> No definidos</p>
+
+            <p>No se pudo cargar la información del usuario.</p>
+
           )}
+
+          <h3 className="perfil-subtitulo">Historial de rutas</h3>
+
+          {rutas.length > 0 ? (
+
+            <ul className="perfil-rutas">
+
+              {rutas.map((ruta) => (
+
+                <li key={ruta._id} className="ruta-card">
+
+                  <p><strong>Destino:</strong> {`Lat: ${ruta.destino.lat}, Lng: ${ruta.destino.lng}`}</p>
+
+                  <p><strong>Paradas:</strong> {ruta.waypoints.length}</p>
+
+                  <p><strong>Fecha:</strong> {new Date(ruta.fecha).toLocaleString()}</p>
+
+                  <button
+                    onClick={() => handleEliminarRuta(ruta._id)}
+                    className="boton-eliminar-ruta"
+                  >
+                    Eliminar ruta
+                  </button>
+
+                </li>
+
+              ))}
+
+            </ul>
+
+          ) : (
+
+            <p>No tenés rutas guardadas aún.</p>
+
+          )}
+
+          <button
+            onClick={cerrarSesion}
+            className="boton-cerrar-sesion"
+          >
+            Cerrar sesión
+          </button>
 
         </div>
 
-      ) : (
-
-        <p>No se pudo cargar la información del usuario.</p>
-
-      )}
-
-      <h3 className="perfil-subtitulo">Historial de rutas</h3>
-
-      {rutas.length > 0 ? (
-
-        <ul className="perfil-rutas">
-
-          {rutas.map((ruta) => (
-
-            <li key={ruta._id} className="ruta-card">
-
-              <p><strong>Destino:</strong> {`Lat: ${ruta.destino.lat}, Lng: ${ruta.destino.lng}`}</p>
-
-              <p><strong>Paradas:</strong> {ruta.waypoints.length}</p>
-
-              <p><strong>Fecha:</strong> {new Date(ruta.fecha).toLocaleString()}</p>
-
-              <button
-                onClick={() => handleEliminarRuta(ruta._id)}
-                className="boton-eliminar-ruta"
-              >
-                Eliminar ruta
-              </button>
-
-            </li>
-
-          ))}
-
-        </ul>
-
-      ) : (
-
-        <p>No tenés rutas guardadas aún.</p>
-
-      )}
-
-      <button
-        onClick={cerrarSesion}
-        className="boton-cerrar-sesion"
-      >
-        Cerrar sesión
-      </button>
+      </div>
 
     </div>
+
   );
 }

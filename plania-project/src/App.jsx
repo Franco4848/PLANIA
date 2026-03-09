@@ -130,7 +130,15 @@ function AppContent() {
 
       )}
 
-      <div className="main-content">
+      <div
+        className={`main-content ${
+          location.pathname === '/login'
+            ? 'login'
+            : location.pathname === '/register'
+            ? 'register'
+            : ''
+        }`}
+      >
 
         <Routes>
 

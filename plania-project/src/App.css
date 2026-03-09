@@ -68,3 +68,13 @@ html, body {
   overflow: hidden;
 
 }
+
+/* 🔥 Ajuste especial para login y register */
+.main-content.login,
+.main-content.register {
+  margin-left: 0 !important;
+  width: 100% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

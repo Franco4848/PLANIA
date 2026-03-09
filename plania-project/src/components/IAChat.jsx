@@ -16,22 +16,17 @@ export default function IAChat({
   cantidadDias,
   setCantidadDias
 }) {
-
   const [loading, setLoading] = useState(false);
 
   const validarCampos = () => {
-
     if (!userPosition || interesesUsuario.length === 0) return false;
-
     if (presupuesto < 10 || presupuesto > 200) return false;
     if (cantidadPersonas < 1 || cantidadPersonas > 4) return false;
     if (cantidadDias < 1 || cantidadDias > 3) return false;
-
     return true;
   };
 
   const consultarIA = () => {
-
     if (!validarCampos()) {
       alert(
         "Completá correctamente los campos.\nPresupuesto: $10-$200\nPersonas: máximo 4\nDías: máximo 3"
@@ -50,7 +45,6 @@ export default function IAChat({
       dias: cantidadDias
     })
       .then((data) => {
-
         if (!data || !data.respuesta || !Array.isArray(data.lugares)) {
           console.error("Respuesta incompleta de IA:", data);
           return;
@@ -63,33 +57,26 @@ export default function IAChat({
         const sugerencias = [];
 
         for (const lugar of data.lugares) {
-
           const categoria = lugar.categoria;
-
           if (!agrupadas.has(categoria)) {
             agrupadas.set(categoria, []);
           }
-
           agrupadas.get(categoria).push(lugar);
         }
 
         for (const lista of agrupadas.values()) {
-
           if (lista[0]) seleccionadas.push(lista[0]);
-
           sugerencias.push(...lista.slice(1));
         }
 
         onActividadesGeneradas(seleccionadas);
         onSugerenciasGeneradas(sugerencias);
-
       })
       .catch((err) => console.error("Error IA:", err))
       .finally(() => setLoading(false));
   };
 
   const renderJustificacion = (texto) => {
-
     return texto
       .split("\n")
       .filter((linea) => linea.trim() !== "")
@@ -101,7 +88,6 @@ export default function IAChat({
   };
 
   const reiniciarConsulta = () => {
-
     setJustificacionIA(null);
     setPresupuesto(10);
     setCantidadPersonas(1);
@@ -109,79 +95,86 @@ export default function IAChat({
   };
 
   return (
-
     <div className="ia-container">
+      <div className="ia-scroll">
+        <h2 className="ia-titulo">🤖 Planificador Inteligente</h2>
+        <p className="ia-subtitle">
+          La inteligencia artificial analizará tu presupuesto,
+          tiempo disponible y preferencias para generar
+          un itinerario personalizado.
+        </p>
 
-      <h2 className="ia-titulo">🤖 Planificador Inteligente</h2>
+        {!justificacionIA ? (
+          <>
+            <div className="ia-cards-row">
+              {/* Tarjeta Presupuesto */}
+              <div className="ia-card">
+                <h3 className="ia-card-title">💵 Presupuesto</h3>
+                <p className="ia-card-subtitle">(10 a 200 USD)</p>
+                <input
+                  type="range"
+                  min="10"
+                  max="200"
+                  step="10"
+                  value={presupuesto}
+                  onChange={(e) => setPresupuesto(Number(e.target.value))}
+                  className="ia-slider"
+                />
+                <div className="ia-rango-info">
+                  Seleccionado: <strong>${presupuesto}</strong>
+                </div>
+              </div>
 
-      <p className="ia-subtitle">
-        La inteligencia artificial analizará tu presupuesto,
-        tiempo disponible y preferencias para generar
-        un itinerario personalizado.
-      </p>
+              {/* Tarjeta Personas */}
+              <div className="ia-card">
+                <h3 className="ia-card-title">🧑‍🤝‍🧑 Personas</h3>
+                <p className="ia-card-subtitle">(máximo 4)</p>
+                <input
+                  type="number"
+                  min="1"
+                  max="4"
+                  value={cantidadPersonas}
+                  onChange={(e) => setCantidadPersonas(Number(e.target.value))}
+                  className="ia-input-number"
+                />
+              </div>
 
-      {!justificacionIA ? (
-
-        <>
-          <div className="ia-input-group">
-
-            <label className="ia-label">
-              💵 Presupuesto disponible
-              <span className="ia-aviso"> (10 a 200 USD)</span>
-            </label>
-
-            <input
-              type="range"
-              min="10"
-              max="200"
-              step="10"
-              value={presupuesto}
-              onChange={(e) => setPresupuesto(Number(e.target.value))}
-              className="ia-slider"
-            />
-
-            <div className="ia-rango-info">
-              Seleccionado: <strong>${presupuesto}</strong>
+              {/* Tarjeta Días */}
+              <div className="ia-card">
+                <h3 className="ia-card-title">📅 Días</h3>
+                <p className="ia-card-subtitle">(máximo 3)</p>
+                <input
+                  type="number"
+                  min="1"
+                  max="3"
+                  value={cantidadDias}
+                  onChange={(e) => setCantidadDias(Number(e.target.value))}
+                  className="ia-input-number"
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="ia-parametros">
+              <h4>Parámetros seleccionados</h4>
+              <ul>
+                <li>💵 Presupuesto: ${presupuesto}</li>
+                <li>🧑‍🤝‍🧑 Personas: {cantidadPersonas}</li>
+                <li>📅 Días: {cantidadDias}</li>
+              </ul>
             </div>
 
-          </div>
+            <div className="ia-justificacion">
+              <h4>🧠 Recomendación de la IA</h4>
+              {renderJustificacion(justificacionIA)}
+            </div>
+          </>
+        )}
+      </div>
 
-          <div className="ia-input-group">
-
-            <label className="ia-label">
-              🧑‍🤝‍🧑 Personas
-              <span className="ia-aviso"> (máximo 4)</span>
-            </label>
-
-            <input
-              type="number"
-              min="1"
-              max="4"
-              value={cantidadPersonas}
-              onChange={(e) => setCantidadPersonas(Number(e.target.value))}
-              className="ia-input-number"
-            />
-
-          </div>
-
-          <div className="ia-input-group">
-
-            <label className="ia-label">
-              📅 Días
-              <span className="ia-aviso"> (máximo 3)</span>
-            </label>
-
-            <input
-              type="number"
-              min="1"
-              max="3"
-              value={cantidadDias}
-              onChange={(e) => setCantidadDias(Number(e.target.value))}
-              className="ia-input-number"
-            />
-
-          </div>
-
+      <div className="ia-footer">
+        {!justificacionIA ? (
           <button
             onClick={consultarIA}
             disabled={loading}
@@ -189,40 +182,12 @@ export default function IAChat({
           >
             {loading ? "Generando itinerario..." : "Generar itinerario"}
           </button>
-        </>
-
-      ) : (
-
-        <>
-          <div className="ia-parametros">
-
-            <h4>Parámetros seleccionados</h4>
-
-            <ul>
-              <li>💵 Presupuesto: ${presupuesto}</li>
-              <li>🧑‍🤝‍🧑 Personas: {cantidadPersonas}</li>
-              <li>📅 Días: {cantidadDias}</li>
-            </ul>
-
-          </div>
-
-          <div className="ia-justificacion">
-
-            <h4>🧠 Recomendación de la IA</h4>
-
-            {renderJustificacion(justificacionIA)}
-
-          </div>
-
-          <button
-            onClick={reiniciarConsulta}
-            className="boton-azul"
-          >
+        ) : (
+          <button onClick={reiniciarConsulta} className="boton-azul">
             Regenerar recomendación
           </button>
-        </>
-      )}
-
+        )}
+      </div>
     </div>
   );
 }

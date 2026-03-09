@@ -63,59 +63,84 @@ export default function ItinerarioInteligente({
 
   return (
     <div className="itinerario-container">
-      <h2>📋 Itinerario</h2>
+      <div className="itinerario-scroll">
+        <h2>📋 Itinerario</h2>
 
-      <div className="itinerario-section">
-        <h3>🧠 Actividades recomendadas por la IA</h3>
-        {actividades.length === 0 ? (
-          <p>No hay actividades en el itinerario.</p>
-        ) : (
-          <ul className="itinerario-list">
-            {actividades.map((act, index) => {
-              const costo = extraerCosto(act.nombre, justificacionIA);
-              return (
-                <li key={index} className="itinerario-item">
-                  <span>
-                    <strong>{act.nombre}</strong> ({act.categoria}) {costo && <span>– <strong>{costo}</strong></span>}
-                  </span>
-                  <button onClick={() => eliminarActividad(index)} className="boton-eliminar">Eliminar</button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-
-      <div className="itinerario-section">
-        <h3>➕ Otras actividades cercanas a ti</h3>
-        {actividades.length === 0 ? (
-          <p>No hay actividades en el itinerario.</p>
-        ) : (
-          <>
-            {sugerenciasIA.length === 0 ? (
-              <p>✅ Ya se agregaron todas las actividades sugeridas.</p>
-            ) : (
-              <ul className="itinerario-list">
-                {sugerenciasIA.map((act, i) => (
-                  <li key={i} className="itinerario-item">
+        <div className="itinerario-section">
+          <h3>🧠 Actividades recomendadas por la IA</h3>
+          {actividades.length === 0 ? (
+            <p>No hay actividades en el itinerario.</p>
+          ) : (
+            <ul className="itinerario-list">
+              {actividades.map((act, index) => {
+                const costo = extraerCosto(act.nombre, justificacionIA);
+                return (
+                  <li key={index} className="itinerario-item">
                     <span>
-                      <strong>{act.nombre}</strong> ({act.categoria}) – <strong>${act.costo} USD</strong>
+                      <strong>{act.nombre}</strong> ({act.categoria}){" "}
+                      {costo && (
+                        <span>
+                          – <strong>{costo}</strong>
+                        </span>
+                      )}
                     </span>
-                    <button onClick={agregarActividadExtra} className="boton-agregar">Agregar actividad</button>
+                    <button
+                      onClick={() => eliminarActividad(index)}
+                      className="boton-eliminar"
+                    >
+                      Eliminar
+                    </button>
                   </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className="itinerario-section">
+          <h3>➕ Otras actividades cercanas a ti</h3>
+          {actividades.length === 0 ? (
+            <p>No hay actividades en el itinerario.</p>
+          ) : (
+            <>
+              {sugerenciasIA.length === 0 ? (
+                <p>✅ Ya se agregaron todas las actividades sugeridas.</p>
+              ) : (
+                <ul className="itinerario-list">
+                  {sugerenciasIA.map((act, i) => (
+                    <li key={i} className="itinerario-item">
+                      <span>
+                        <strong>{act.nombre}</strong> ({act.categoria}) –{" "}
+                        <strong>${act.costo} USD</strong>
+                      </span>
+                      <button
+                        onClick={agregarActividadExtra}
+                        className="boton-agregar"
+                      >
+                        Agregar actividad
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
-      {actividades.length > 0 && (
-        <div className="botones-acciones">
-          <button onClick={mostrarRutaEnMapa} className="boton-mostrar">Mostrar ruta</button>
-          <button onClick={guardarRutaEnBD} className="boton-guardar">Guardar ruta</button>
-        </div>
-      )}
+      {/* 🔥 Footer siempre presente */}
+      <div className="itinerario-footer">
+        {actividades.length > 0 && (
+          <div className="botones-acciones">
+            <button onClick={mostrarRutaEnMapa} className="boton-mostrar">
+              Mostrar ruta
+            </button>
+            <button onClick={guardarRutaEnBD} className="boton-guardar">
+              Guardar ruta
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
